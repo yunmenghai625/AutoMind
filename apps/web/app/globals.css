@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 97%;
+    --foreground: 217 33% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 217 33% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 217 33% 8%;
+    --primary: 199 95% 48%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 217 33% 12%;
+    --muted: 214 32% 93%;
+    --muted-foreground: 215 16% 43%;
+    --accent: 187 94% 41%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 152 68% 36%;
+    --success-foreground: 210 40% 98%;
+    --warning: 35 92% 47%;
+    --warning-foreground: 210 40% 98%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 199 95% 48%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 220 17% 5%;
+    --foreground: 210 20% 96%;
+    --card: 220 16% 8%;
+    --card-foreground: 210 20% 96%;
+    --popover: 220 16% 9%;
+    --popover-foreground: 210 20% 96%;
+    --primary: 199 95% 58%;
+    --primary-foreground: 220 17% 5%;
+    --secondary: 218 14% 14%;
+    --secondary-foreground: 210 20% 96%;
+    --muted: 218 14% 13%;
+    --muted-foreground: 215 16% 62%;
+    --accent: 187 94% 48%;
+    --accent-foreground: 220 17% 5%;
+    --destructive: 0 74% 52%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 152 68% 40%;
+    --success-foreground: 210 40% 98%;
+    --warning: 35 92% 50%;
+    --warning-foreground: 210 40% 98%;
+    --border: 218 14% 15%;
+    --input: 218 14% 17%;
+    --ring: 199 95% 58%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Subtle grid backdrop used on landing / architecture pages */
+  .bg-grid {
+    background-image: linear-gradient(
+        to right,
+        hsl(var(--border) / 0.4) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, hsl(var(--border) / 0.4) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .skeleton-base {
+    @apply relative overflow-hidden rounded-md bg-muted;
+  }
+  .skeleton-shimmer::after {
+    content: "";
+    @apply absolute inset-0 animate-shimmer;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--card-foreground) / 0.06),
+      transparent
+    );
+    background-size: 200% 100%;
+  }
+}

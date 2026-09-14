@@ -1,0 +1,1 @@
+"""AutoMind test support package."""

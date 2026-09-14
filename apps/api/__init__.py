@@ -1,0 +1,1 @@
+"""AutoMind FastAPI service."""

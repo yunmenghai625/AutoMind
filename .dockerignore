@@ -1,0 +1,17 @@
+.git
+.github
+.venv
+.pytest_cache
+.ruff_cache
+.tmp
+tmp
+backups
+loadtests
+docs
+tests
+deploy
+apps/web
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.DS_Store
