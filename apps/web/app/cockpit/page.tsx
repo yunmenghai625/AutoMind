@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { CockpitView } from "@/features/cockpit/cockpit-view";
 
 export const metadata: Metadata = {
-  title: "Cockpit",
+  title: "智能座舱",
   description:
-    "Natural-language vehicle control, Vehicle Digital Twin and cockpit manual controls.",
+    "通过自然语言和手动控制操作车辆数字孪生。",
 };
 
 export default function CockpitPage() {

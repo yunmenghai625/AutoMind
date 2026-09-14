@@ -84,7 +84,7 @@ export function DialogClose({
       variant="ghost"
       size="icon"
       onClick={onClose}
-      aria-label="Close dialog"
+      aria-label="关闭对话框"
       className="absolute right-3 top-3"
     >
       <X className="h-4 w-4" />

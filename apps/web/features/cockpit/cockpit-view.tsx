@@ -45,12 +45,12 @@ export function CockpitView() {
     >
       <div className="container mx-auto max-w-7xl px-4 py-6">
         <PageHeader
-          title="Cockpit"
+          title="智能座舱"
           badge={<MockBadge />}
-          description="Live Vehicle Digital Twin and natural-language AI controls. AI Tool calls and manual controls mutate the same Vehicle State."
+          description="实时车辆数字孪生与自然语言 AI 控制。智能体工具调用和手动操作共同作用于同一车辆状态。"
           actions={
             <Button onClick={() => setThemeOpen(true)}>
-              <Sparkles /> AI Theme
+              <Sparkles /> AI 座舱主题
             </Button>
           }
         />

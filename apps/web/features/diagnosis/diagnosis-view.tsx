@@ -15,13 +15,15 @@ import { IS_MOCK } from "@/lib/config";
 import type { DiagnosisResult } from "@/types/diagnosis";
 
 const PIPELINE = [
-  "Image Guard",
-  "Compress & Store",
-  "Vision Model",
-  "Confidence Gate",
-  "Knowledge Retrieval",
-  "Risk Classification",
+  "图像安全校验",
+  "压缩与存储",
+  "视觉模型识别",
+  "置信度门控",
+  "知识检索",
+  "风险分级",
 ];
+
+const RISK_LABEL = { Low: "低风险", Medium: "中风险", High: "高风险" } as const;
 
 export function DiagnosisView() {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -69,9 +71,9 @@ export function DiagnosisView() {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <PageHeader
-        title="Diagnosis"
+        title="智能诊断"
         badge={IS_MOCK ? <MockBadge /> : undefined}
-        description="Upload a photo of your dashboard or a warning light, and the multimodal pipeline returns a structured diagnosis."
+        description="上传仪表盘或警告灯照片，多模态诊断流程将返回结构化诊断结果。"
       />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -79,7 +81,7 @@ export function DiagnosisView() {
         <div className="space-y-4">
           <Card>
             <CardHeader className="border-b py-3">
-              <CardTitle className="text-base">Upload Vehicle Dashboard Image</CardTitle>
+              <CardTitle className="text-base">上传车辆仪表图片</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
               {!preview ? (
@@ -102,18 +104,18 @@ export function DiagnosisView() {
                       ? "border-primary bg-primary/5 text-primary"
                       : "border-border hover:border-primary/50 hover:text-foreground",
                   )}
-                  aria-label="Upload a dashboard image by clicking or dragging"
+                  aria-label="点击或拖拽上传仪表图片"
                 >
                   <ImagePlus className="h-8 w-8" />
-                  <span className="text-sm">Click to upload or drag & drop</span>
-                  <span className="text-xs">PNG / JPG · dashboard photo or warning light</span>
+                  <span className="text-sm">点击上传或将图片拖到此处</span>
+                  <span className="text-xs">支持 PNG / JPG · 仪表盘或警告灯照片</span>
                 </button>
               ) : (
                 <div className="relative overflow-hidden rounded-xl border">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={preview}
-                    alt="Dashboard preview"
+                    alt="仪表图片预览"
                     className="aspect-video w-full object-cover"
                   />
                   <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/70 to-transparent p-2">
@@ -123,7 +125,7 @@ export function DiagnosisView() {
                       size="sm"
                       onClick={reset}
                       className="h-8 text-white hover:bg-white/20"
-                      aria-label="Remove uploaded image"
+                      aria-label="移除已上传图片"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -136,7 +138,7 @@ export function DiagnosisView() {
                 accept="image/*"
                 className="hidden"
                 onChange={(e) => onFile(e.target.files?.[0])}
-                aria-label="Dashboard image file input"
+                aria-label="选择仪表图片文件"
               />
 
               {preview && (
@@ -148,12 +150,12 @@ export function DiagnosisView() {
                   {phase === "loading" ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Analyzing…
+                      分析中…
                     </>
                   ) : (
                     <>
                       <ScanSearch className="mr-2 h-4 w-4" />
-                      Analyze
+                      开始分析
                     </>
                   )}
                 </Button>
@@ -162,7 +164,7 @@ export function DiagnosisView() {
               {phase === "loading" && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Running multimodal diagnosis pipeline</span>
+                    <span>正在运行多模态诊断流程</span>
                   </div>
                   <Progress value={66} className="h-1.5" />
                 </div>
@@ -171,16 +173,16 @@ export function DiagnosisView() {
               {phase === "error" && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Analysis failed</AlertTitle>
+                  <AlertTitle>分析失败</AlertTitle>
                   <AlertDescription>
-                    AutoMind API is temporarily unavailable.
+                    AutoMind API 暂时不可用。
                     <Button
                       variant="link"
                       size="sm"
                       className="h-auto p-0 px-1"
                       onClick={() => void analyze()}
                     >
-                      <RefreshCw className="mr-1 h-3 w-3" /> Retry
+                      <RefreshCw className="mr-1 h-3 w-3" /> 重试
                     </Button>
                   </AlertDescription>
                 </Alert>
@@ -192,7 +194,7 @@ export function DiagnosisView() {
           <Card>
             <CardContent className="p-4">
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Analysis Pipeline
+                分析流程
               </p>
               <ol className="flex flex-wrap items-center gap-1.5 text-xs">
                 {PIPELINE.map((step, i) => (
@@ -216,7 +218,7 @@ export function DiagnosisView() {
             <Card className="flex min-h-[360px] items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <ScanSearch className="mx-auto mb-2 h-10 w-10 text-primary/40" />
-                <p className="text-sm">Upload an image, then press Analyze.</p>
+                <p className="text-sm">请先上传图片，然后点击“开始分析”。</p>
               </div>
             </Card>
           )}
@@ -229,7 +231,7 @@ export function DiagnosisView() {
             <Card className="flex min-h-[360px] items-center justify-center">
               <div className="text-center text-destructive">
                 <AlertTriangle className="mx-auto mb-2 h-10 w-10" />
-                <p className="text-sm">Analysis could not be completed.</p>
+                <p className="text-sm">本次分析未能完成。</p>
               </div>
             </Card>
           )}
@@ -258,12 +260,12 @@ function DiagnosisResultCard({ result }: { result: DiagnosisResult }) {
                 <h3 className="text-base font-semibold">{d.label}</h3>
               </div>
               <Badge className="bg-destructive/10 text-destructive" variant="outline">
-                {d.risk}
+                {RISK_LABEL[d.risk]}
               </Badge>
             </div>
             <div className="space-y-1">
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Confidence</span>
+                <span>置信度</span>
                 <span className="tabular-nums">{d.confidence}%</span>
               </div>
               <Progress value={d.confidence} className="h-1.5" />
@@ -272,7 +274,7 @@ function DiagnosisResultCard({ result }: { result: DiagnosisResult }) {
         </Card>
       ))}
 
-      <Section title="Possible Causes">
+      <Section title="可能原因">
         <ul className="space-y-2">
           {result.causes.map((c) => (
             <li key={c.title} className="rounded-lg border bg-card p-3">
@@ -283,7 +285,7 @@ function DiagnosisResultCard({ result }: { result: DiagnosisResult }) {
         </ul>
       </Section>
 
-      <Section title="Recommended Action">
+      <Section title="处理建议">
         <ul className="space-y-2">
           {result.recommendations.map((r) => (
             <li key={r.title} className="rounded-lg border bg-card p-3">
@@ -294,14 +296,14 @@ function DiagnosisResultCard({ result }: { result: DiagnosisResult }) {
         </ul>
       </Section>
 
-      <Section title="Knowledge References">
+      <Section title="知识参考">
         <ul className="space-y-2">
           {result.references.map((ref, i) => (
             <li key={i} className="rounded-lg border bg-muted/30 p-3 text-xs">
               <p className="font-medium text-foreground">
                 {ref.source}
                 {ref.chapter ? ` · ${ref.chapter}` : ""}
-                {ref.page ? ` · p.${ref.page}` : ""}
+                {ref.page ? ` · 第 ${ref.page} 页` : ""}
               </p>
               <p className="mt-1 text-muted-foreground">{ref.snippet}</p>
             </li>

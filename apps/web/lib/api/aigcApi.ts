@@ -67,7 +67,7 @@ export async function applyCockpitTheme(
         display_mode: "night" as const,
         music_style: "静谧氛围音乐",
         temperature: 22,
-        wallpaper_prompt: "quiet seaside night",
+        wallpaper_prompt: "静谧海岸夜景",
       },
       wallpaper_url: null,
       vehicle_state_version: 2,

@@ -11,7 +11,7 @@ export function ModelStatusBadge({ online = true }: ModelStatusBadgeProps) {
   return (
     <div
       className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground"
-      title={online ? "AI Model Provider Online" : "AI Model Provider Offline"}
+      title={online ? "AI 模型服务在线" : "AI 模型服务离线"}
     >
       <span
         className={cn(
@@ -20,7 +20,7 @@ export function ModelStatusBadge({ online = true }: ModelStatusBadgeProps) {
         )}
       />
       <span className="hidden sm:inline">
-        {online ? "Model Online" : "Model Offline"}
+        {online ? "模型在线" : "模型离线"}
       </span>
       <span className="sm:hidden">API</span>
     </div>

@@ -54,24 +54,51 @@ const MOCK_SAFETY_EVENTS: AgentSafetyEvent[] = [
     id: "se_1",
     rule: "doors_blocked_while_moving",
     severity: "blocked",
-    message: "Door unlock request blocked while vehicle speed > 0 (120 km/h).",
+    message: "车辆速度大于 0（当前 120 km/h），车门解锁请求已被拦截。",
     at: new Date(Date.now() - 3 * 3600000).toISOString(),
   },
   {
     id: "se_2",
     rule: "speed_limit_120",
     severity: "warning",
-    message: "Vehicle approaching AI-managed speed cap.",
+    message: "车辆正在接近 AI 管理的速度上限。",
     at: new Date(Date.now() - 7 * 3600000).toISOString(),
   },
   {
     id: "se_3",
     rule: "battery_low_guard",
     severity: "info",
-    message: "Seat heating capped to level 1 when battery below 20%.",
+    message: "电量低于 20% 时，座椅加热限制为 1 挡。",
     at: new Date(Date.now() - 22 * 3600000).toISOString(),
   },
 ];
+
+const AGENT_LABEL: Record<string, string> = {
+  Cockpit: "座舱智能体",
+  Knowledge: "知识智能体",
+  Diagnosis: "诊断智能体",
+  Vehicle: "车辆智能体",
+};
+
+const RUN_STATUS_LABEL: Record<string, string> = {
+  success: "成功",
+  failed: "失败",
+  blocked: "已拦截",
+  rejected: "已拒绝",
+  running: "运行中",
+};
+
+const COMPONENT_STATUS_LABEL: Record<SystemComponent["status"], string> = {
+  operational: "正常",
+  degraded: "降级",
+  down: "中断",
+};
+
+const SAFETY_SEVERITY_LABEL: Record<AgentSafetyEvent["severity"], string> = {
+  info: "提示",
+  warning: "警告",
+  blocked: "已拦截",
+};
 
 function formatTime(iso: string) {
   return new Date(iso).toLocaleString("zh-CN", {
@@ -135,7 +162,7 @@ function ComponentStatus({ items }: { items: SystemComponent[] }) {
       <CardHeader className="border-b py-3">
         <CardTitle className="flex items-center gap-2 text-sm">
           <CircuitBoard className="h-4 w-4 text-primary" />
-          System Components
+          系统组件
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 pt-4">
@@ -156,7 +183,7 @@ function ComponentStatus({ items }: { items: SystemComponent[] }) {
                 variant={STATUS_BADGE[c.status] as "success" | "warning" | "destructive"}
                 className="text-[10px]"
               >
-                {c.status}
+                {COMPONENT_STATUS_LABEL[c.status]}
               </Badge>
             </div>
           </div>
@@ -177,7 +204,7 @@ function SafetyEvents({ events }: { events: AgentSafetyEvent[] }) {
       <CardHeader className="border-b py-3">
         <CardTitle className="flex items-center gap-2 text-sm">
           <ShieldAlert className="h-4 w-4 text-primary" />
-          Safety Events
+          安全事件
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 pt-4">
@@ -185,7 +212,7 @@ function SafetyEvents({ events }: { events: AgentSafetyEvent[] }) {
           <div key={e.id} className="rounded-lg border bg-card p-3">
             <div className="flex items-center justify-between gap-2">
               <span className={cn("text-[10px] font-mono uppercase", tone[e.severity])}>
-                {e.severity}
+                {SAFETY_SEVERITY_LABEL[e.severity]}
               </span>
               <span className="text-[11px] text-muted-foreground">
                 {formatTime(e.at)}
@@ -193,7 +220,7 @@ function SafetyEvents({ events }: { events: AgentSafetyEvent[] }) {
             </div>
             <p className="mt-1 text-xs text-muted-foreground">{e.message}</p>
             <p className="mt-0.5 font-mono text-[10px] text-muted-foreground/60">
-              rule: {e.rule}
+              规则：{e.rule}
             </p>
           </div>
         ))}
@@ -222,17 +249,17 @@ export function AdminView() {
       getSafetyEvents().then((events) => {
         if (!IS_MOCK) setSafetyEvents(events);
       }),
-    ]).catch(() => setError("Admin metrics require a valid administrator session."));
+    ]).catch(() => setError("查看运营指标需要有效的管理员会话。"));
   }, []);
 
   if (error) {
-    return <div className="container mx-auto max-w-7xl px-4 py-6"><PageHeader title="Admin" /><p className="mt-6 text-sm text-destructive">{error}</p></div>;
+    return <div className="container mx-auto max-w-7xl px-4 py-6"><PageHeader title="运营管理" /><p className="mt-6 text-sm text-destructive">{error}</p></div>;
   }
 
   if (!overview || !metrics) {
     return (
       <div className="container mx-auto max-w-7xl px-4 py-6">
-        <PageHeader title="Admin" />
+        <PageHeader title="运营管理" />
         <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="h-28 animate-pulse rounded-xl bg-muted/50" />
@@ -246,7 +273,7 @@ export function AdminView() {
   const trafficValues = metrics.traffic.map((t) => t.requests);
   const testTrafficValues = metrics.traffic.map((t) => t.testRequests);
   const successSeries = {
-    name: "Agent Success Rate",
+    name: "智能体成功率",
     color: "hsl(var(--success))",
     values: metrics.traffic.map((t) => t.agentSuccessRate),
   };
@@ -254,48 +281,48 @@ export function AdminView() {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <PageHeader
-        title="Admin Dashboard"
+        title="运营管理看板"
         badge={IS_MOCK ? <MockBadge /> : undefined}
-        description={`Platform observability — agent success rate, latency, tool usage and cost. Refreshed ${new Date(overview.generatedAt).toLocaleTimeString("zh-CN")}`}
+        description={`平台可观测性——智能体成功率、延迟、工具调用与成本。更新时间：${new Date(overview.generatedAt).toLocaleTimeString("zh-CN")}`}
       />
 
       <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <OverviewCard icon={<Users className="h-4 w-4" />} label="Users" value={String(overview.users)} />
+        <OverviewCard icon={<Users className="h-4 w-4" />} label="用户数" value={String(overview.users)} />
         <OverviewCard
           icon={<Activity className="h-4 w-4" />}
-          label="Requests"
-          value={Intl.NumberFormat("en-US").format(overview.requests)}
-          hint={`last 24h · ${overview.testRequests} load-test excluded`}
+          label="请求数"
+          value={Intl.NumberFormat("zh-CN").format(overview.requests)}
+          hint={`最近 24 小时 · 已排除 ${overview.testRequests} 条压测请求`}
           spark={trafficValues.slice(-8)}
         />
         <OverviewCard
           icon={<Bot className="h-4 w-4" />}
-          label="Agent Success"
+          label="智能体成功率"
           value={String(overview.agentSuccessRate)}
           suffix="%"
-          hint="rolling window"
+          hint="滚动统计窗口"
           spark={successSeries.values.slice(-8)}
         />
         <OverviewCard
           icon={<Clock className="h-4 w-4" />}
-          label="P95 Latency"
+          label="P95 延迟"
           value={String(overview.p95Latency)}
           suffix="s"
-          hint="agent responses"
+          hint="智能体响应"
         />
         <OverviewCard
           icon={<Waypoints className="h-4 w-4" />}
-          label="Tool Success"
+          label="工具成功率"
           value={String(overview.toolSuccessRate)}
           suffix="%"
-          hint="all tools"
+          hint="全部工具"
         />
         <OverviewCard
           icon={<DollarSign className="h-4 w-4" />}
-          label="AI Cost"
+          label="AI 成本"
           value={String(overview.aiCost)}
           suffix="¥"
-          hint="today"
+          hint="今日"
         />
       </div>
 
@@ -304,24 +331,24 @@ export function AdminView() {
           <CardHeader className="border-b py-3">
             <CardTitle className="flex items-center gap-2 text-sm">
               <Activity className="h-4 w-4 text-primary" />
-              Traffic & Success Rate
+              流量与成功率
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             <div>
               <p className="mb-2 text-xs text-muted-foreground">
-                Requests per day · load-test traffic is excluded from user totals
+                每日请求量 · 压测流量不计入真实用户统计
               </p>
               <MultiLines
                 labels={trafficLabels}
                 series={[
                   {
-                    name: "User traffic",
+                    name: "用户流量",
                     color: "hsl(var(--primary))",
                     values: trafficValues,
                   },
                   {
-                    name: "Load test",
+                    name: "压测流量",
                     color: "hsl(var(--muted-foreground))",
                     values: testTrafficValues,
                   },
@@ -335,7 +362,7 @@ export function AdminView() {
             </div>
             <div>
               <p className="mb-2 text-xs text-muted-foreground">
-                Agent success rate (daily)
+                智能体每日成功率
               </p>
               <VerticalBars
                 labels={trafficLabels}
@@ -350,12 +377,12 @@ export function AdminView() {
           <CardHeader className="border-b py-3">
             <CardTitle className="flex items-center gap-2 text-sm">
               <Layers className="h-4 w-4 text-primary" />
-              Agent Usage
+              智能体使用量
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
             <UsageBars
-              data={metrics.usage.map((u) => ({ label: u.agent, value: u.calls }))}
+              data={metrics.usage.map((u) => ({ label: AGENT_LABEL[u.agent] ?? u.agent, value: u.calls }))}
             />
           </CardContent>
         </Card>
@@ -366,7 +393,7 @@ export function AdminView() {
           <CardHeader className="border-b py-3">
             <CardTitle className="flex items-center gap-2 text-sm">
               <Cpu className="h-4 w-4 text-primary" />
-              Response Latency (s)
+              响应延迟（秒）
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
@@ -385,14 +412,14 @@ export function AdminView() {
           <CardHeader className="border-b py-3">
             <CardTitle className="flex items-center gap-2 text-sm">
               <DollarSign className="h-4 w-4 text-primary" />
-              Daily AI Cost (¥)
+              每日 AI 成本（¥）
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
             <MultiLines
               labels={metrics.dailyCost.map((c) => c.date)}
               series={[
-                { name: "cost", color: "hsl(var(--accent))", values: metrics.dailyCost.map((c) => c.cost) },
+                { name: "成本", color: "hsl(var(--accent))", values: metrics.dailyCost.map((c) => c.cost) },
               ]}
             />
           </CardContent>
@@ -404,19 +431,19 @@ export function AdminView() {
           <CardHeader className="border-b py-3">
             <CardTitle className="flex items-center gap-2 text-sm">
               <Activity className="h-4 w-4 text-primary" />
-              Recent Agent Runs
+              最近智能体运行记录
             </CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto pt-2">
             <table className="w-full min-w-[560px] text-sm">
               <thead>
                 <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                  <th className="pb-2 font-medium">Run</th>
-                  <th className="pb-2 font-medium">Agent</th>
-                  <th className="pb-2 font-medium">Latency</th>
-                  <th className="pb-2 font-medium">Tools</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium">Time</th>
+                  <th className="pb-2 font-medium">运行 ID</th>
+                  <th className="pb-2 font-medium">智能体</th>
+                  <th className="pb-2 font-medium">延迟</th>
+                  <th className="pb-2 font-medium">工具</th>
+                  <th className="pb-2 font-medium">状态</th>
+                  <th className="pb-2 font-medium">时间</th>
                 </tr>
               </thead>
               <tbody>
@@ -429,8 +456,8 @@ export function AdminView() {
                     className="cursor-pointer border-b transition-colors hover:bg-muted/40"
                   >
                     <td className="py-2.5 font-mono text-xs">{r.id}</td>
-                    <td className="py-2.5">{r.agent}</td>
-                    <td className="py-2.5 tabular-nums">{r.latencyMs}ms · {r.steps} steps</td>
+                    <td className="py-2.5">{AGENT_LABEL[r.agent] ?? r.agent}</td>
+                    <td className="py-2.5 tabular-nums">{r.latencyMs}ms · {r.steps} 步</td>
                     <td className="max-w-[220px] py-2.5">
                       <div className="flex flex-wrap gap-1">
                         {r.toolsUsed.map((t) => (
@@ -445,7 +472,7 @@ export function AdminView() {
                         variant={r.status === "success" ? "success" : r.status === "failed" ? "destructive" : "warning"}
                         className="text-[10px]"
                       >
-                        {r.status}
+                        {RUN_STATUS_LABEL[r.status] ?? r.status}
                       </Badge>
                     </td>
                     <td className="py-2.5 text-xs text-muted-foreground">{formatTime(r.time)}</td>
@@ -484,16 +511,16 @@ function RunDetailDialog({
           <DialogClose onClose={onClose} />
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              Run {detail.id}
+              运行记录 {detail.id}
               <Badge
                 variant={detail.status === "success" ? "success" : detail.status === "failed" ? "destructive" : "warning"}
                 className="text-[10px]"
               >
-                {detail.status}
+                {RUN_STATUS_LABEL[detail.status] ?? detail.status}
               </Badge>
             </DialogTitle>
             <DialogDescription>
-              {detail.agent} agent · {detail.latencyMs}ms ·{" "}
+              {AGENT_LABEL[detail.agent] ?? detail.agent} · {detail.latencyMs}ms ·{" "}
               {new Date(detail.time).toLocaleString("zh-CN")}
             </DialogDescription>
           </DialogHeader>
@@ -501,7 +528,7 @@ function RunDetailDialog({
           <div className="space-y-4">
             <div className="rounded-lg bg-muted/40 p-3">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                User Query
+                用户问题
               </p>
               <p className="mt-1 text-sm">{detail.query}</p>
             </div>
@@ -528,7 +555,7 @@ function RunDetailDialog({
 
           <DialogFooter>
             <Button variant="outline" onClick={onClose}>
-              Close
+              关闭
             </Button>
           </DialogFooter>
         </>

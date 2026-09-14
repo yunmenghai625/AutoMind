@@ -12,11 +12,19 @@ import { MockBadge } from "@/components/common/mock-badge";
 
 export function VehicleTwinCard() {
   const vehicle = useVehicleStore((s) => s.vehicle);
+  const chargeLabel = {
+    IDLE: "未充电",
+    CHARGING: "充电中",
+    COMPLETE: "已充满",
+  }[vehicle.chargeStatus];
+  const lightLabel = { OFF: "关闭", AUTO: "自动", ON: "开启" }[
+    vehicle.headlight
+  ];
 
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between space-y-0 py-3">
-        <CardTitle className="text-base">Vehicle Digital Twin</CardTitle>
+        <CardTitle className="text-base">车辆数字孪生</CardTitle>
         <MockBadge />
       </CardHeader>
       <CardContent className="space-y-4">
@@ -34,15 +42,13 @@ export function VehicleTwinCard() {
                     : "text-muted-foreground"
                 }
               >
-                AC {vehicle.acStatus}
+                空调 {vehicle.acStatus === "ON" ? "开启" : "关闭"}
               </Badge>
               <Badge variant="outline" className="text-muted-foreground">
-                {vehicle.chargeStatus === "IDLE"
-                  ? `Charging ${vehicle.chargeStatus.toLowerCase()}`
-                  : vehicle.chargeStatus}
+                充电状态：{chargeLabel}
               </Badge>
               <Badge variant="outline" className="text-muted-foreground">
-                Headlight {vehicle.headlight}
+                前照灯：{lightLabel}
               </Badge>
             </div>
           </div>
@@ -50,47 +56,47 @@ export function VehicleTwinCard() {
           {/* Key readouts */}
           <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
             <ReadoutItem
-              label="Speed"
+              label="车速"
               icon={<Gauge className="h-3 w-3" />}
               value={
                 <span className="text-lg font-bold tabular-nums">
                   <AnimatedNumber value={vehicle.speed} suffix=" km/h" />
                 </span>
               }
-              hint={vehicle.gear === "P" ? "Parked" : `Gear ${vehicle.gear}`}
+              hint={vehicle.gear === "P" ? "已驻车" : `${vehicle.gear} 挡`}
             />
             <ReadoutItem
-              label="Battery"
+              label="电池电量"
               icon={<Battery className="h-3 w-3" />}
               value={
                 <span className="text-lg font-bold tabular-nums">
                   <AnimatedNumber value={vehicle.batterySoc} suffix="%" />
                 </span>
               }
-              hint={vehicle.chargeStatus.toLowerCase()}
+              hint={chargeLabel}
             />
             <ReadoutItem
-              label="Range"
+              label="预计续航"
               icon={<Route className="h-3 w-3" />}
               value={
                 <span className="text-lg font-bold tabular-nums">
                   <AnimatedNumber value={vehicle.rangeKm} suffix=" km" />
                 </span>
               }
-              hint="Estimated"
+              hint="估算值"
             />
             <ReadoutItem
-              label="Gear"
+              label="挡位"
               icon={<Settings2 className="h-3 w-3" />}
               value={<span className="text-lg font-bold">{vehicle.gear}</span>}
-              hint={vehicle.speed > 0 ? "In motion" : "Stationary"}
+              hint={vehicle.speed > 0 ? "行驶中" : "静止"}
             />
           </div>
         </div>
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Battery Level</span>
+            <span className="text-muted-foreground">电池电量</span>
             <span className="font-medium tabular-nums">{vehicle.batterySoc}%</span>
           </div>
           <Progress value={vehicle.batterySoc} className="h-2" />

@@ -10,8 +10,8 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-  title = "Something went wrong",
-  description = "AutoMind API is temporarily unavailable. Please try again.",
+  title = "出现异常",
+  description = "AutoMind API 暂时不可用，请稍后重试。",
   onRetry,
   compact = false,
 }: ErrorStateProps) {
@@ -31,7 +31,7 @@ export function ErrorState({
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry}>
           <Icon name="RotateCcw" />
-          Retry
+          重试
         </Button>
       )}
     </div>

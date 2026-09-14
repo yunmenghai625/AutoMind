@@ -77,7 +77,7 @@ export function VehicleSvg({ vehicle }: VehicleSvgProps) {
       viewBox="0 0 600 335"
       className="h-auto w-full max-w-[560px]"
       role="img"
-      aria-label="Live top-view of the AutoMind demo vehicle"
+      aria-label="AutoMind 演示车辆实时俯视图"
     >
       {/* Ground shadow */}
       <ellipse cx="300" cy="312" rx="210" ry="16" fill="hsl(220 17% 4%)" opacity="0.6" />
@@ -112,8 +112,8 @@ export function VehicleSvg({ vehicle }: VehicleSvgProps) {
       <rect x="272" y="152" width="56" height="56" rx="8" fill="hsl(220 16% 12%)" stroke="hsl(218 14% 24%)" strokeWidth="1" />
 
       {/* Seats */}
-      <HeatSeat x={158} y={158} heatLevel={vehicle.driverSeatHeat} label="D" />
-      <HeatSeat x={378} y={158} heatLevel={vehicle.passengerSeatHeat} label="P" />
+      <HeatSeat x={158} y={158} heatLevel={vehicle.driverSeatHeat} label="主驾" />
+      <HeatSeat x={378} y={158} heatLevel={vehicle.passengerSeatHeat} label="副驾" />
 
       {/* Side windows (animated height = open level) */}
       <g>

@@ -3,54 +3,54 @@
 export const CORE_CAPABILITIES = [
   {
     icon: "CarFront",
-    title: "AI Cockpit",
+    title: "AI 智能座舱",
     description:
-      "Natural-language driving companion that talks to and controls your vehicle.",
+      "通过自然语言与车辆对话，并安全控制座舱功能。",
   },
   {
     icon: "Layers",
-    title: "Vehicle Digital Twin",
+    title: "车辆数字孪生",
     description:
-      "A live, real-time model of your car — speed, climate, battery and windows.",
+      "实时映射车速、空调、电池和车窗等车辆状态。",
   },
   {
     icon: "Database",
-    title: "Automotive RAG",
+    title: "汽车知识 RAG",
     description:
-      "Grounds every answer in your manuals, guides and service documentation.",
+      "基于车辆手册、使用指南和维修资料提供可追溯回答。",
   },
   {
     icon: "ScanSearch",
-    title: "Multimodal Diagnosis",
+    title: "多模态智能诊断",
     description:
-      "Upload a dashboard photo and get a structured fault diagnosis in seconds.",
+      "上传仪表照片，快速获得结构化故障诊断建议。",
   },
   {
     icon: "ShieldCheck",
-    title: "Agent Safety",
+    title: "智能体安全防护",
     description:
-      "A safety guard that blocks risky actions like opening doors while driving.",
+      "通过安全门拦截行驶中开门等高风险车辆操作。",
   },
   {
     icon: "Activity",
-    title: "Production Observability",
+    title: "生产级可观测性",
     description:
-      "Agent traces, latency budgets and AI cost monitoring — production-grade.",
+      "覆盖智能体链路、延迟预算和 AI 成本的生产级监控。",
   },
 ] as const;
 
 export const HERO_METRICS = [
-  { label: "Agent Success Rate", value: "96.2%", icon: "CheckCircle2" },
-  { label: "Tool Success Rate", value: "97.4%", icon: "Wrench" },
-  { label: "P95 Latency", value: "1.8s", icon: "Timer" },
-  { label: "Supported Tools", value: "12", icon: "Blocks" },
+  { label: "智能体成功率", value: "96.2%", icon: "CheckCircle2" },
+  { label: "工具调用成功率", value: "97.4%", icon: "Wrench" },
+  { label: "P95 延迟", value: "1.8 秒", icon: "Timer" },
+  { label: "已支持工具", value: "12", icon: "Blocks" },
 ] as const;
 
 export const ARCHITECTURE_FLOW = [
-  "User",
+  "用户",
   "AutoMind",
-  "Supervisor",
-  "Cockpit / RAG / Diagnosis / Vehicle",
-  "Tools",
-  "Vehicle Digital Twin",
+  "监督智能体",
+  "座舱 / RAG / 诊断 / 车辆智能体",
+  "工具层",
+  "车辆数字孪生",
 ] as const;

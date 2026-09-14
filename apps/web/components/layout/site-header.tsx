@@ -11,15 +11,15 @@ import { Button } from "@/components/ui/button";
 
 export const NAV_ITEMS = [
   { href: "/", label: "AutoMind" },
-  { href: "/cockpit", label: "Cockpit" },
-  { href: "/knowledge", label: "Knowledge" },
-  { href: "/diagnosis", label: "Diagnosis" },
-  { href: "/garage", label: "Garage" },
-  { href: "/architecture", label: "Architecture" },
-  { href: "/status", label: "Status" },
+  { href: "/cockpit", label: "智能座舱" },
+  { href: "/knowledge", label: "知识库" },
+  { href: "/diagnosis", label: "智能诊断" },
+  { href: "/garage", label: "我的车库" },
+  { href: "/architecture", label: "技术架构" },
+  { href: "/status", label: "系统状态" },
 ] as const;
 
-const ADMIN_ITEMS = [{ href: "/admin", label: "Admin" }] as const;
+const ADMIN_ITEMS = [{ href: "/admin", label: "运营管理" }] as const;
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -35,7 +35,7 @@ export function SiteHeader() {
           <Link
             href="/"
             className="flex items-center gap-2 font-semibold tracking-tight"
-            aria-label="AutoMind home"
+            aria-label="返回 AutoMind 首页"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-primary-foreground">
               AM
@@ -43,7 +43,7 @@ export function SiteHeader() {
             <span className="text-sm">AutoMind</span>
           </Link>
 
-          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Primary">
+          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="主导航">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
@@ -81,18 +81,18 @@ export function SiteHeader() {
           <ModelStatusBadge />
           <ThemeToggle />
           <Link
-            href="https://github.com"
+            href="https://github.com/yunmenghai625/AutoMind"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden h-9 items-center rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
-            aria-label="AutoMind GitHub repository"
+            aria-label="AutoMind GitHub 代码仓库"
           >
             GitHub
           </Link>
           <div
             className="hidden h-7 w-7 items-center justify-center rounded-full bg-muted text-xs font-semibold md:flex"
-            aria-label="Signed in as Demo User"
-            title="Demo User"
+            aria-label="当前为演示用户"
+            title="演示用户"
           >
             AV
           </div>
@@ -101,7 +101,7 @@ export function SiteHeader() {
             size="icon"
             className="lg:hidden"
             onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+            aria-label={open ? "关闭导航菜单" : "打开导航菜单"}
             aria-expanded={open}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -112,7 +112,7 @@ export function SiteHeader() {
       {/* Mobile drawer */}
       {open && (
         <div className="border-t lg:hidden">
-          <nav className="container mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3" aria-label="Mobile">
+          <nav className="container mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3" aria-label="移动端导航">
             {[...NAV_ITEMS, ...ADMIN_ITEMS].map((item) => (
               <Link
                 key={item.href}

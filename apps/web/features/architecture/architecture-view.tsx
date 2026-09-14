@@ -26,80 +26,80 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SYSTEM_LAYERS = [
   {
-    title: "Frontend",
+    title: "前端应用",
     desc: "Next.js · TypeScript · Tailwind · shadcn/ui · Framer Motion",
     icon: Layers,
   },
   {
     title: "FastAPI",
-    desc: "REST + SSE streaming gateway · `/api/v1/*` contract",
+    desc: "REST + SSE 流式网关 · `/api/v1/*` 接口契约",
     icon: Server,
   },
   {
     title: "LangGraph",
-    desc: "Stateful agent orchestration · supervisor routing",
+    desc: "有状态智能体编排 · 监督智能体路由",
     icon: GitBranch,
   },
   {
-    title: "Agents",
-    desc: "Cockpit · Knowledge RAG · Diagnosis · Vehicle",
+    title: "智能体层",
+    desc: "座舱 · 知识 RAG · 诊断 · 车辆",
     icon: Bot,
   },
   {
-    title: "Tools",
+    title: "工具层",
     desc: "set_temperature · door_lock · knowledge_search · vision_model",
     icon: FileSearch,
   },
   {
-    title: "Data",
-    desc: "PostgreSQL · pgvector · Redis · Object Storage",
+    title: "数据层",
+    desc: "PostgreSQL · pgvector · Redis · 对象存储",
     icon: Database,
   },
 ];
 
 const AGENTS = [
   {
-    name: "Supervisor",
+    name: "监督智能体",
     icon: BrainCircuit,
-    desc: "Classifies intent, routes to the right agent and enforces safety policies.",
+    desc: "识别用户意图、路由至对应智能体并执行安全策略。",
     accent: true,
   },
   {
-    name: "Cockpit",
+    name: "座舱智能体",
     icon: Gauge,
-    desc: "Natural-language vehicle control against the live digital twin.",
+    desc: "通过自然语言控制实时车辆数字孪生。",
   },
   {
-    name: "Knowledge",
+    name: "知识智能体",
     icon: FileSearch,
-    desc: "Grounded answers over manuals via RAG + reranking.",
+    desc: "通过 RAG 与重排序，依据手册生成可追溯回答。",
   },
   {
-    name: "Diagnosis",
+    name: "诊断智能体",
     icon: ScanSearch,
-    desc: "Multimodal fault detection from dashboard imagery.",
+    desc: "根据仪表图片执行多模态故障识别。",
   },
   {
-    name: "Vehicle",
+    name: "车辆智能体",
     icon: CarFront,
-    desc: "State read/write, recall & VIN services for the twin.",
+    desc: "提供数字孪生状态读写、召回与 VIN 服务。",
   },
 ];
 
 const DATA_LAYERS = [
-  { name: "PostgreSQL", icon: Container, note: "Auth · vehicles · agent runs" },
-  { name: "pgvector", icon: Database, note: "Embedding store for RAG" },
-  { name: "Redis", icon: HardDrive, note: "Session · rate limits · cache" },
-  { name: "Object Storage", icon: Cloud, note: "Diagnosis images · assets" },
+  { name: "PostgreSQL", icon: Container, note: "认证 · 车辆 · 智能体运行记录" },
+  { name: "pgvector", icon: Database, note: "RAG 向量嵌入存储" },
+  { name: "Redis", icon: HardDrive, note: "会话 · 限流 · 缓存" },
+  { name: "对象存储", icon: Cloud, note: "诊断图片 · 生成资产" },
 ];
 
 const INFRA = [
-  { name: "Cloudflare", icon: CloudCog, note: "CDN & edge" },
-  { name: "Railway", icon: Server, note: "API hosting" },
-  { name: "Supabase", icon: Cloud, note: "Postgres + auth" },
-  { name: "Upstash", icon: Container, note: "Serverless Redis" },
-  { name: "Grafana", icon: ShieldCheck, note: "Observability" },
-  { name: "GitHub Actions", icon: GitBranch, note: "CI/CD" },
+  { name: "Cloudflare", icon: CloudCog, note: "CDN 与边缘网络" },
+  { name: "Railway", icon: Server, note: "API 托管" },
+  { name: "Supabase", icon: Cloud, note: "Postgres 与认证" },
+  { name: "Upstash", icon: Container, note: "无服务器 Redis" },
+  { name: "Grafana", icon: ShieldCheck, note: "可观测性" },
+  { name: "GitHub Actions", icon: GitBranch, note: "持续集成与部署" },
 ];
 
 const fade = {
@@ -111,9 +111,9 @@ export function ArchitectureView() {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <PageHeader
-        title="System Architecture"
+        title="技术架构"
         badge={<MockBadge />}
-        description="How the AutoMind frontend, agent runtime and data plane fit together."
+        description="展示 AutoMind 前端、智能体运行时与数据层之间的协作关系。"
       />
 
       {/* System architecture flow */}
@@ -121,10 +121,10 @@ export function ArchitectureView() {
         {...fade}
         transition={{ duration: 0.3 }}
         className="mt-6"
-        aria-label="System architecture layers"
+        aria-label="系统架构分层"
       >
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
-          System Architecture
+          系统架构
         </h2>
         <div className="space-y-1">
           {SYSTEM_LAYERS.map((layer, i) => (
@@ -158,10 +158,10 @@ export function ArchitectureView() {
         {...fade}
         transition={{ duration: 0.3, delay: 0.05 }}
         className="mt-10"
-        aria-label="Agent architecture"
+        aria-label="智能体架构"
       >
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
-          Agent Architecture
+          智能体架构
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {AGENTS.map((agent, i) => (
@@ -190,8 +190,7 @@ export function ArchitectureView() {
           ))}
         </div>
         <p className="mt-3 text-center text-[11px] text-muted-foreground/70">
-          Supervisor routes requests, maintains context, and gates every tool call
-          through the Safety Guard before execution.
+          监督智能体负责请求路由与上下文维护，每次工具调用在执行前都必须通过安全防护校验。
         </p>
       </motion.section>
 
@@ -200,9 +199,9 @@ export function ArchitectureView() {
         {...fade}
         transition={{ duration: 0.3, delay: 0.1 }}
         className="mt-10"
-        aria-label="Data layer"
+        aria-label="数据层"
       >
-        <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Data Layer</h2>
+        <h2 className="mb-3 text-sm font-semibold text-muted-foreground">数据层</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {DATA_LAYERS.map((d) => (
             <Card key={d.name} className="transition-colors hover:border-primary/40">
@@ -225,9 +224,9 @@ export function ArchitectureView() {
         {...fade}
         transition={{ duration: 0.3, delay: 0.15 }}
         className="mt-10 pb-2"
-        aria-label="Infrastructure"
+        aria-label="基础设施"
       >
-        <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Infrastructure</h2>
+        <h2 className="mb-3 text-sm font-semibold text-muted-foreground">基础设施</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {INFRA.map((f) => (
             <Card key={f.name} className="transition-colors hover:border-primary/40">
@@ -245,13 +244,13 @@ export function ArchitectureView() {
         </div>
         <div className="mt-6 flex flex-wrap gap-2">
           <Badge variant="outline" className="text-xs">
-            Safety Guard on every tool call
+            每次工具调用均经过安全防护
           </Badge>
           <Badge variant="outline" className="text-xs">
-            SSE streaming paths reserved
+            已预留 SSE 流式通道
           </Badge>
           <Badge variant="outline" className="text-xs">
-            Mock ↔ Live API toggle ready
+            支持模拟与在线 API 切换
           </Badge>
         </div>
       </motion.section>

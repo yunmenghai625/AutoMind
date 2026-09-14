@@ -104,17 +104,19 @@ export function AiThemeDialog({ open, onOpenChange, onApplied }: AiThemeDialogPr
               className="flex min-h-52 flex-col justify-end bg-cover bg-center p-5 text-white"
               style={previewStyle}
             >
-              <p className="text-xs uppercase tracking-[0.25em] text-white/65">Preview only</p>
+              <p className="text-xs tracking-[0.25em] text-white/65">仅供预览</p>
               <h3 className="mt-1 text-2xl font-semibold">{preview.theme_spec.name}</h3>
               <p className="mt-2 text-sm text-white/80">
-                {preview.theme_spec.display_mode} · {preview.theme_spec.music_style} · {preview.theme_spec.temperature}°C
+                {{ comfort: "舒适", night: "夜间", minimal: "极简", focus: "专注" }[
+                  preview.theme_spec.display_mode
+                ]} · {preview.theme_spec.music_style} · {preview.theme_spec.temperature}°C
               </p>
               <div className="mt-3 flex items-center gap-2 text-xs text-white/70">
                 <span
                   className="h-3 w-3 rounded-full border border-white/40"
                   style={{ backgroundColor: preview.theme_spec.ambient_color }}
                 />
-                环境光 {preview.theme_spec.ambient_brightness}% · {preview.metadata.status}
+                环境光 {preview.theme_spec.ambient_brightness}% · {{ success: "生成成功", cached: "缓存结果", degraded: "降级生成" }[preview.metadata.status] ?? preview.metadata.status}
                 {preview.metadata.cached ? " · 缓存命中" : ""}
               </div>
             </div>

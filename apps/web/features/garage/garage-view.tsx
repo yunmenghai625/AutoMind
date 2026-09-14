@@ -19,6 +19,19 @@ const RISK_TONE: Record<RecallRecord["risk"], "warning" | "destructive" | "outli
   High: "destructive",
 };
 
+const RISK_LABEL: Record<RecallRecord["risk"], string> = {
+  Low: "低风险",
+  Medium: "中风险",
+  High: "高风险",
+};
+
+const RECALL_STATUS_LABEL = {
+  success: "正常",
+  cached: "缓存数据",
+  degraded: "降级服务",
+  unavailable: "暂不可用",
+} as const;
+
 export function GarageView() {
   const [vehicle, setVehicle] = React.useState<GarageVehicle | null>(null);
   const [recalls, setRecalls] = React.useState<RecallRecord[]>([]);
@@ -35,13 +48,13 @@ export function GarageView() {
         setRecalls(recallResult.recalls);
         setRecallStatus(recallResult.status);
       })
-      .catch(() => setError("Garage data is temporarily unavailable."));
+      .catch(() => setError("车库数据暂时不可用。"));
   }, []);
 
   if (error) {
     return (
       <div className="container mx-auto max-w-7xl px-4 py-6">
-        <PageHeader title="Garage" />
+        <PageHeader title="我的车库" />
         <Card><CardContent className="py-6 text-sm text-muted-foreground">{error}</CardContent></Card>
       </div>
     );
@@ -50,7 +63,7 @@ export function GarageView() {
   if (!vehicle) {
     return (
       <div className="container mx-auto max-w-7xl px-4 py-6">
-        <PageHeader title="Garage" />
+        <PageHeader title="我的车库" />
         <div className="grid gap-4 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-28 animate-pulse rounded-xl bg-muted/50" />
@@ -68,14 +81,14 @@ export function GarageView() {
       kind: "recall" as const,
       title: firstRecall?.component ?? "-",
       detail: firstRecall?.recommendedAction ?? "-",
-      meta: firstRecall ? `Issued ${firstRecall.issuedAt} · ${firstRecall.risk} risk` : "-",
+      meta: firstRecall ? `发布于 ${firstRecall.issuedAt} · ${RISK_LABEL[firstRecall.risk]}` : "-",
     },
     {
       id: "service-1",
       kind: "service" as const,
-      title: "Annual maintenance due",
-      detail: "Recommended at the 15,000 km mark.",
-      meta: "Next service in 2,158 km",
+      title: "年度保养即将到期",
+      detail: "建议在行驶里程达到 15,000 km 时进行保养。",
+      meta: "距下次保养约 2,158 km",
     },
   ];
 
@@ -91,9 +104,9 @@ export function GarageView() {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <PageHeader
-        title="Garage"
+        title="我的车库"
         badge={IS_MOCK ? <MockBadge /> : undefined}
-        description="Your connected vehicle at a glance — health, battery and service notifications."
+        description="集中查看已连接车辆的健康、电池、召回与保养提醒。"
       />
 
       <Card className="overflow-hidden">
@@ -113,9 +126,9 @@ export function GarageView() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="success" className="text-[10px]">Vehicle Connected</Badge>
+            <Badge variant="success" className="text-[10px]">车辆已连接</Badge>
             <span className="text-[11px] text-muted-foreground">
-              Last check · {vehicle.lastCheck}
+              最近检查 · {vehicle.lastCheck}
             </span>
           </div>
         </div>
@@ -124,24 +137,24 @@ export function GarageView() {
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Readout
           icon={<Gauge className="h-4 w-4" />}
-          label="Mileage"
+          label="行驶里程"
           value={`${(vehicle.mileageKm / 1000).toFixed(1)}k km`}
         />
         <Readout
           icon={<Timer className="h-4 w-4" />}
-          label="Battery SoC"
+          label="电池电量"
           value={`${vehicle.batterySoc}%`}
           bar={vehicle.batterySoc}
         />
         <Readout
           icon={<HeartPulse className="h-4 w-4" />}
-          label="Battery Health"
+          label="电池健康度"
           value={vehicle.batteryHealth === null ? "—" : `${vehicle.batteryHealth}%`}
           bar={vehicle.batteryHealth ?? undefined}
         />
         <Readout
           icon={<Timer className="h-4 w-4" />}
-          label="Last Check"
+          label="最近检查"
           value={vehicle.lastCheck}
         />
       </div>
@@ -151,10 +164,10 @@ export function GarageView() {
           <CardHeader className="border-b py-3">
             <CardTitle className="flex items-center gap-2 text-sm">
               <ShieldAlert className="h-4 w-4 text-warning" />
-              Recalls
+              召回信息
               {recallStatus !== "success" && (
                 <Badge variant="outline" className="ml-auto text-[10px]">
-                  {recallStatus}
+                  {RECALL_STATUS_LABEL[recallStatus]}
                 </Badge>
               )}
             </CardTitle>
@@ -162,12 +175,12 @@ export function GarageView() {
           <CardContent className="space-y-3 pt-4">
             {recalls.length === 0 && recallStatus === "unavailable" && (
               <p className="text-sm text-muted-foreground">
-                Recall provider is temporarily unavailable. Try again later.
+                召回数据服务暂时不可用，请稍后重试。
               </p>
             )}
             {recalls.length === 0 && recallStatus !== "unavailable" && (
               <p className="text-sm text-muted-foreground">
-                No open recalls for this vehicle.
+                当前车辆没有未处理的召回项目。
               </p>
             )}
             {recalls.map((r) => (
@@ -175,14 +188,14 @@ export function GarageView() {
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm font-medium">{r.component}</p>
                   <Badge variant={RISK_TONE[r.risk]} className="text-[10px]">
-                    {r.risk}
+                    {RISK_LABEL[r.risk]}
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {r.recommendedAction}
                 </p>
                 <p className="mt-1 font-mono text-[10px] text-muted-foreground/70">
-                  {r.id} · issued {r.issuedAt}
+                  {r.id} · 发布于 {r.issuedAt}
                 </p>
               </div>
             ))}
@@ -192,7 +205,7 @@ export function GarageView() {
         <Card>
           <CardHeader className="border-b py-3">
             <CardTitle className="flex items-center gap-2 text-sm">
-              Service & Notifications
+              保养与通知
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
@@ -201,14 +214,14 @@ export function GarageView() {
               <Input
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                placeholder="Filter service items…"
+                placeholder="筛选保养与通知…"
                 className="pl-8"
-                aria-label="Filter service notifications"
+                aria-label="筛选保养通知"
               />
             </div>
             {visible.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                No items match “{filter}”.
+                没有与“{filter}”匹配的项目。
               </p>
             )}
             {visible.map((i) => (
@@ -216,7 +229,7 @@ export function GarageView() {
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm font-medium">{i.title}</p>
                   <Badge variant={i.kind === "recall" ? "warning" : "outline"} className="text-[10px]">
-                    {i.kind}
+                    {i.kind === "recall" ? "召回" : "保养"}
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">{i.detail}</p>

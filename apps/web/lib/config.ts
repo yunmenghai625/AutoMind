@@ -13,7 +13,7 @@ export const APP_NAME =
 
 export const APP_TAGLINE =
   process.env.NEXT_PUBLIC_APP_TAGLINE ??
-  "Production Automotive AI Cockpit Platform";
+  "生产级汽车智能座舱平台";
 
 export const API_MODE: ApiMode =
   process.env.NEXT_PUBLIC_API_MODE === "live" ? "live" : "mock";

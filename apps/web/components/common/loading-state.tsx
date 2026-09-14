@@ -6,7 +6,7 @@ interface LoadingStateProps {
   className?: string;
 }
 
-export function LoadingState({ label = "Loading…", className }: LoadingStateProps) {
+export function LoadingState({ label = "加载中…", className }: LoadingStateProps) {
   return (
     <div
       className={cn(

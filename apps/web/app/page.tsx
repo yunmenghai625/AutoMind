@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { HomeView } from "@/features/home/home-view";
 
 export const metadata: Metadata = {
-  title: "AutoMind — AI Vehicle Platform",
+  title: "AutoMind — 汽车智能平台",
   description:
-    "AI Cockpit, Vehicle Digital Twin, automotive RAG and multimodal diagnosis for your car.",
+    "集智能座舱、车辆数字孪生、汽车知识 RAG 与多模态诊断于一体。",
 };
 
 export default function HomePage() {

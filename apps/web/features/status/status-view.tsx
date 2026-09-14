@@ -15,23 +15,23 @@ const STATUS_TONE: Record<SystemComponent["status"], "success" | "warning" | "de
 };
 
 const STATUS_LABEL: Record<SystemComponent["status"], string> = {
-  operational: "Operational",
-  degraded: "Degraded",
-  down: "Down",
+  operational: "运行正常",
+  degraded: "服务降级",
+  down: "服务中断",
 };
 
 const INCIDENTS = [
   {
     id: "inc_1",
-    title: "No incidents reported in the last 90 days.",
+    title: "最近 90 天未报告服务事故。",
     status: "resolved",
-    note: "All systems remain healthy.",
+    note: "所有系统保持健康运行。",
   },
   {
     id: "inc_2",
-    title: "Scheduled maintenance window (demo)",
+    title: "计划维护窗口（演示）",
     status: "maintenance",
-    note: "Planned for demonstration purposes only.",
+    note: "仅用于演示计划维护信息。",
   },
 ];
 
@@ -42,8 +42,8 @@ export function StatusView() {
   return (
     <div className="container mx-auto max-w-5xl px-4 py-6">
       <PageHeader
-        title="System Status"
-        description="Real-time service health for the AutoMind platform."
+        title="系统状态"
+        description="实时查看 AutoMind 平台各项服务的健康状态。"
       />
 
       <Card className="mt-6 overflow-hidden">
@@ -55,19 +55,19 @@ export function StatusView() {
           >
             <ShieldCheck className="h-7 w-7" />
           </span>
-          <h2 className="text-xl font-semibold">All Systems Operational</h2>
+          <h2 className="text-xl font-semibold">所有系统运行正常</h2>
           <p className="text-sm text-muted-foreground">
-            AutoMind services are running normally. Uptime over the last 90 days:{" "}
+            AutoMind 服务当前运行正常，最近 90 天可用率：{" "}
             <span className="font-medium text-foreground">99.98%</span>
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2">
             <Badge variant="success" className="text-[11px]">
               <CheckCircle2 className="h-3 w-3" />
-              Operational
+              运行正常
             </Badge>
             <Badge variant="outline" className="text-[11px]">
               <Clock className="h-3 w-3" />
-              Updated just now
+              刚刚更新
             </Badge>
           </div>
         </div>
@@ -76,7 +76,7 @@ export function StatusView() {
       <Card className="mt-6">
         <div className="flex items-center gap-2 border-b px-5 py-3">
           <Activity className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Components</h3>
+          <h3 className="text-sm font-semibold">服务组件</h3>
         </div>
         <div className="divide-y">
           {components.map((c) => (
@@ -106,7 +106,7 @@ export function StatusView() {
       <Card className="mt-6">
         <div className="flex items-center gap-2 border-b px-5 py-3">
           <Clock className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Incident History</h3>
+          <h3 className="text-sm font-semibold">事故记录</h3>
         </div>
         <div className="space-y-2 p-5">
           {INCIDENTS.map((inc) => (

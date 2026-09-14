@@ -12,7 +12,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggle}
-      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={theme === "dark" ? "切换到浅色模式" : "切换到深色模式"}
       data-state={theme}
     >
       {theme === "dark" ? (

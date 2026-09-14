@@ -7,40 +7,40 @@ import type {
 export const MOCK_KNOWLEDGE_SOURCES: KnowledgeSource[] = [
   {
     id: "vehicle-manual",
-    title: "Vehicle Manual",
-    description: "Owner's manual & operation guide",
+    title: "车辆用户手册",
+    description: "车主手册与操作指南",
     documents: 214,
     status: "indexed",
     updatedAt: "2026-09-10",
   },
   {
     id: "ev-charging",
-    title: "EV Charging Guide",
-    description: "Charging, range and battery care",
+    title: "电动汽车充电指南",
+    description: "充电、续航与电池养护",
     documents: 58,
     status: "indexed",
     updatedAt: "2026-09-08",
   },
   {
     id: "adas-manual",
-    title: "ADAS Manual",
-    description: "Advanced driver assistance systems",
+    title: "ADAS 使用手册",
+    description: "高级驾驶辅助系统说明",
     documents: 96,
     status: "indexed",
     updatedAt: "2026-08-30",
   },
   {
     id: "maintenance",
-    title: "Maintenance Guide",
-    description: "Service intervals & DIY checks",
+    title: "车辆保养指南",
+    description: "保养周期与日常自检",
     documents: 132,
     status: "syncing",
     updatedAt: "2026-09-11",
   },
   {
     id: "warning-lights",
-    title: "Warning Light Guide",
-    description: "Dashboard warning indicators",
+    title: "仪表警告灯指南",
+    description: "仪表盘警告指示说明",
     documents: 74,
     status: "indexed",
     updatedAt: "2026-09-05",
@@ -49,30 +49,30 @@ export const MOCK_KNOWLEDGE_SOURCES: KnowledgeSource[] = [
 
 const citations: Citation[] = [
   {
-    source: "Vehicle Manual",
-    chapter: "Warning Indicators",
+    source: "车辆用户手册",
+    chapter: "警告指示灯",
     page: 217,
     snippet:
-      "The Tire Pressure Monitoring System indicator illuminates when one or more tires are significantly under-inflated…",
+      "当一个或多个轮胎的气压明显低于标准值时，胎压监测系统指示灯会亮起……",
   },
   {
-    source: "Warning Light Guide",
+    source: "仪表警告灯指南",
     chapter: "TPMS",
     page: 12,
     snippet:
-      "If TPMS lamp stays on, check tire pressures with a gauge; if it flashes for 60s, a TPMS fault is present…",
+      "若 TPMS 指示灯持续点亮，请使用胎压计检查轮胎；若闪烁约 60 秒，则可能存在系统故障……",
   },
 ];
 
 export function mockKnowledgeQuery(query: string): KnowledgeAnswer {
   return {
     answer:
-      "Yes, you can continue driving short distances, but carefully. The TPMS warning light means at least one tire is running below the recommended pressure.\n\nCheck all four pressures at the next safe stop — recommended cold inflation is 250 kPa (36 psi). If the tire visually looks flat, do not keep driving; stop and inspect. If the light flashes for about 60 seconds then stays on, there may be a system fault rather than a low tire — have the TPMS checked at a service center.\n\nReduce your speed and avoid hard braking. Keep the drive short and head to the nearest safe location to add air.",
+      "可以谨慎地短距离行驶，但应尽快处理。TPMS 胎压警告灯表示至少有一个轮胎低于建议胎压。\n\n请在下一个安全停车点检查四个轮胎，建议冷态胎压为 250 kPa（36 psi）。如果轮胎肉眼可见明显瘪塌，请不要继续行驶，应立即停车检查。如果指示灯先闪烁约 60 秒后常亮，可能是胎压监测系统故障，建议前往服务中心检查。\n\n请降低车速、避免急刹，并尽快前往最近的安全地点补充胎压。",
     citations,
     retrieval: {
       originalQuery: query,
       rewrittenQuery:
-        query + " TPMS tire pressure warning recommended action safe driving",
+        query + " TPMS 胎压警告 建议措施 安全驾驶",
       retrievedDocuments: 5,
       rerankerEnabled: true,
       vectorSearchMs: 64,

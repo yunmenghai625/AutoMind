@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { KnowledgeView } from "@/features/knowledge/knowledge-view";
 
 export const metadata: Metadata = {
-  title: "Knowledge",
+  title: "汽车知识库",
   description:
-    "Automotive knowledge RAG with citations and retrieval details.",
+    "提供引用来源和检索详情的汽车知识 RAG。",
 };
 
 export default function KnowledgePage() {

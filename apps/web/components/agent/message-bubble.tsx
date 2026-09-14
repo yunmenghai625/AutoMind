@@ -43,12 +43,12 @@ function AssistantBubble({ message }: { message: ChatMessage }) {
           <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
             <span>AutoMind · {meta.latencyMs}ms</span>
             {meta.runId && (
-              <span className="flex items-center gap-1" aria-label="Rate this answer">
+              <span className="flex items-center gap-1" aria-label="评价此回答">
                 <button
                   type="button"
                   className={cn("rounded p-1 hover:text-foreground", rating === 1 && "text-primary")}
                   onClick={() => void rate(1)}
-                  aria-label="Helpful answer"
+                  aria-label="回答有帮助"
                 >
                   <ThumbsUp className="h-3 w-3" />
                 </button>
@@ -56,7 +56,7 @@ function AssistantBubble({ message }: { message: ChatMessage }) {
                   type="button"
                   className={cn("rounded p-1 hover:text-foreground", rating === -1 && "text-destructive")}
                   onClick={() => void rate(-1)}
-                  aria-label="Unhelpful answer"
+                  aria-label="回答没有帮助"
                 >
                   <ThumbsDown className="h-3 w-3" />
                 </button>
@@ -80,7 +80,7 @@ function SafetyWarning({ message }: { message: ChatMessage }) {
       </div>
       <div className="space-y-1">
         <p className="text-sm font-semibold text-destructive">
-          Operation Rejected
+          操作已拒绝
         </p>
         <p className="text-xs text-muted-foreground">{message.meta?.safetyReason}</p>
         <p className="text-sm text-foreground">{message.content}</p>
@@ -122,7 +122,7 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
 
 export function TypingBubble() {
   return (
-    <div className="flex gap-2.5" aria-label="AutoMind is responding">
+    <div className="flex gap-2.5" aria-label="AutoMind 正在回复">
       <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
         <MessageSquare className="h-3.5 w-3.5" />
       </div>

@@ -33,7 +33,7 @@ function SourceList() {
   if (error) {
     return (
       <p className="text-sm text-destructive">
-        Failed to load knowledge sources. Please retry.
+        知识来源加载失败，请稍后重试。
       </p>
     );
   }
@@ -68,14 +68,14 @@ function SourceList() {
                     : "text-success",
                 )}
               >
-                {s.status}
+                {s.status === "indexed" ? "已索引" : "同步中"}
               </Badge>
             </div>
             <p className="truncate text-xs text-muted-foreground">
               {s.description}
             </p>
             <p className="text-[11px] text-muted-foreground">
-              {s.documents} documents · updated {s.updatedAt}
+              {s.documents} 篇文档 · 更新于 {s.updatedAt}
             </p>
           </div>
         </li>
@@ -92,7 +92,7 @@ function CitationCard({ citation }: { citation: Citation }) {
         <span className="font-medium text-foreground">{citation.source}</span>
         <span className="text-muted-foreground">
           {citation.chapter ? `· ${citation.chapter}` : ""}
-          {citation.page ? ` · p.${citation.page}` : ""}
+          {citation.page ? ` · 第 ${citation.page} 页` : ""}
         </span>
       </div>
       <blockquote className="mt-1.5 border-l-2 border-primary/40 pl-2 text-xs text-muted-foreground">
@@ -115,7 +115,7 @@ function RetrievalDetails({ answer }: { answer: KnowledgeAnswer }) {
       >
         <span className="flex items-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          Retrieval Details
+          检索详情
         </span>
         <ChevronDown
           className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")}
@@ -124,17 +124,17 @@ function RetrievalDetails({ answer }: { answer: KnowledgeAnswer }) {
       {open && (
         <div className="space-y-2 border-t p-3 text-xs">
           <div>
-            <p className="text-muted-foreground">Original Query</p>
+            <p className="text-muted-foreground">原始问题</p>
             <p className="text-foreground">{r.originalQuery}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Rewritten Query</p>
+            <p className="text-muted-foreground">改写后的检索问题</p>
             <p className="text-foreground">{r.rewrittenQuery}</p>
           </div>
           <div className="flex items-center gap-2 pt-1">
-            <Badge variant="outline">Retrieved Documents · {r.retrievedDocuments}</Badge>
+            <Badge variant="outline">召回文档 · {r.retrievedDocuments}</Badge>
             <Badge variant="outline">
-              Reranker · {r.rerankerEnabled ? "Enabled" : "Disabled"}
+              重排序 · {r.rerankerEnabled ? "已启用" : "未启用"}
             </Badge>
             <Badge variant="outline">
               {r.vectorSearchMs + r.rerankMs}ms
@@ -185,14 +185,14 @@ export function KnowledgeView() {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <PageHeader
-        title="Knowledge"
+        title="汽车知识库"
         badge={<MockBadge />}
-        description="Automotive knowledge RAG grounded in the vehicle manuals and guides. Answers include citations and retrieval details."
+        description="基于车辆手册和使用指南的汽车知识 RAG，回答包含引用来源与检索详情。"
       />
       <div className="mt-6 grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
         <Card className="self-start">
           <CardHeader className="py-3">
-            <CardTitle className="text-base">Knowledge Sources</CardTitle>
+            <CardTitle className="text-base">知识来源</CardTitle>
           </CardHeader>
           <CardContent className="py-2">
             <SourceList />
@@ -201,7 +201,7 @@ export function KnowledgeView() {
 
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0 border-b py-3">
-            <CardTitle className="text-base">AI RAG Assistant</CardTitle>
+            <CardTitle className="text-base">AI 知识助手</CardTitle>
             <MockBadge />
           </CardHeader>
           <CardContent className="flex min-h-[520px] flex-col gap-4 p-4">
@@ -210,13 +210,13 @@ export function KnowledgeView() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && void ask()}
-                placeholder='Ask about your car, e.g. "胎压报警灯亮了还能继续开吗？"'
-                aria-label="Ask the knowledge base"
+                placeholder='询问车辆问题，例如“胎压报警灯亮了还能继续开吗？”'
+                aria-label="向汽车知识库提问"
               />
               <Button
                 onClick={() => void ask()}
                 disabled={loading || !query.trim()}
-                aria-label="Send knowledge question"
+                aria-label="发送知识库问题"
               >
                 <Send className="h-4 w-4" />
               </Button>
@@ -236,7 +236,7 @@ export function KnowledgeView() {
                 <div className="flex h-full flex-col items-center justify-center gap-2 text-center text-muted-foreground">
                   <Sparkles className="h-8 w-8 text-primary/50" />
                   <p className="text-sm">
-                    Ask anything about your vehicle. Grounded in your manuals.
+                    可以询问任何车辆问题，回答将以车辆手册为依据。
                   </p>
                 </div>
               )}
@@ -288,7 +288,7 @@ export function KnowledgeView() {
               {loading && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-                  Retrieving documents & reranking…
+                  正在检索文档并进行重排序…
                 </div>
               )}
             </div>
@@ -297,13 +297,13 @@ export function KnowledgeView() {
               <>
                 <Separator />
                 <p className="text-center text-sm text-destructive">
-                  AutoMind API is temporarily unavailable.{" "}
+                  AutoMind API 暂时不可用。{" "}
                   <button
                     type="button"
                     className="underline"
                     onClick={() => void ask(messages.filter((m) => m.role === "user").at(-1)?.content)}
                   >
-                    Retry
+                    重试
                   </button>
                 </p>
               </>

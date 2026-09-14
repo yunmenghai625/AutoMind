@@ -99,11 +99,11 @@ export function mockChatReply(
         ),
       ),
       safety(
-        "Operation Rejected — door_unlock blocked by Safety Guard.",
-        "Vehicle speed > 0 km/h. Door unlock is only allowed when the vehicle is stationary and in Park.",
+        "操作已拒绝——安全防护已拦截车门解锁操作。",
+        "车辆速度大于 0 km/h。只有车辆静止且挡位处于 P 挡时才允许解锁车门。",
       ),
       assistant(
-        "I can't do that — we're moving at 120 km/h. Safety policy prevents door unlock while the vehicle is in motion (speed must be 0 km/h and gear in P). Please stop the car first and I'll unlock it for you.",
+        "现在不能执行开门操作——车辆正以 120 km/h 行驶。安全策略要求车速为 0 km/h 且挡位处于 P 挡。请先安全停车，我再为你解锁车门。",
         { blocked: true, latencyMs: 312 },
       ),
     ];
@@ -119,10 +119,10 @@ export function mockChatReply(
     vehicleNow.passengerTemperature = 25;
     const messages: ChatMessage[] = [
       toolMessage(
-        toolStatus("set_temperature", { zone: "Front Passenger", target: 25 }, "SUCCESS", 9),
+        toolStatus("set_temperature", { zone: "前排乘客", target: 25 }, "SUCCESS", 9),
       ),
       assistant(
-        "Done — I set the front passenger (Mom) temperature to 25°C.",
+        "好的，已将前排乘客（妈妈一侧）的温度设置为 25°C。",
         { latencyMs: 420 },
       ),
     ];
@@ -134,13 +134,13 @@ export function mockChatReply(
     vehicleNow.driverSeatHeat = 1;
     const messages: ChatMessage[] = [
       toolMessage(
-        toolStatus("set_temperature", { zone: "Driver", target: 24 }, "SUCCESS", 9),
+        toolStatus("set_temperature", { zone: "主驾", target: 24 }, "SUCCESS", 9),
       ),
       toolMessage(
-        toolStatus("set_seat_heating", { zone: "Driver", level: 1 }, "SUCCESS", 7),
+        toolStatus("set_seat_heating", { zone: "主驾", level: 1 }, "SUCCESS", 7),
       ),
       assistant(
-        "I've raised the driver temperature to 24°C and switched on seat heating (level 1). Warming up now — let me know if you'd like it warmer.",
+        "已将主驾温度调至 24°C，并开启 1 挡座椅加热。正在升温，如果还觉得冷可以继续告诉我。",
         { latencyMs: 420 },
       ),
     ];
@@ -151,15 +151,15 @@ export function mockChatReply(
   const responses: Array<{ pattern: RegExp; text: string }> = [
     {
       pattern: /battery|电量|续航|range/i,
-      text: `Your battery is at ${vehicle.batterySoc}% with an estimated range of ${vehicle.rangeKm} km. Based on your drive pattern, that covers your typical commute with plenty of margin.`,
+      text: `当前电量为 ${vehicle.batterySoc}%，预计续航 ${vehicle.rangeKm} km。按照你的日常出行习惯，这些电量足以覆盖常规通勤，并留有充足余量。`,
     },
     {
       pattern: /hello|hi|你好|hey/i,
-      text: "Hello! I'm AutoMind, your cockpit AI. Try saying \"I'm a bit cold\" or ask me about your battery, or how to open the door.",
+      text: "你好！我是 AutoMind 智能座舱助手。可以对我说“我有点冷”，也可以询问车辆电量或车门控制。",
     },
     {
       pattern: /help|帮助|能做什么|what can you do/i,
-      text: "I can control your climate and seats, answer questions from the vehicle manual, help diagnose dashboard warnings, and remind you about safety policies.",
+      text: "我可以控制空调和座椅、根据车辆手册回答问题、协助诊断仪表警告，并在操作存在风险时进行安全提醒。",
     },
   ];
 
@@ -170,7 +170,7 @@ export function mockChatReply(
         assistant(
           hit
             ? hit.text
-            : `I understand what you're asking, but this is running on the AutoMind demo kernel with a limited mock intent set. Try: "I'm a bit cold", "My mom is cold", "Open the door at 120 km/h", or "How's my battery?".`,
+            : "我理解你的需求，但当前 AutoMind 演示模式只支持部分指令。可以试试：“我有点冷”“我妈有点冷”“120 公里时速帮我打开车门”或“我的电量还够吗”。",
           { latencyMs: 420 },
         ),
       ],

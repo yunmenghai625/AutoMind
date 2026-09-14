@@ -34,7 +34,7 @@ export async function http<T>(path: string, opts: FetchOptions = {}): Promise<T>
     throw new HttpClientError(
       400,
       "MOCK_CALL",
-      "http() must not be called in mock mode; use the mock providers.",
+      "模拟模式下不能直接调用网络接口，请使用模拟数据服务。",
     );
   }
 
@@ -60,11 +60,11 @@ export async function http<T>(path: string, opts: FetchOptions = {}): Promise<T>
       cache: "no-store",
     });
   } catch {
-    throw new HttpClientError(0, "NETWORK", "Cannot reach AutoMind API.");
+    throw new HttpClientError(0, "NETWORK", "无法连接 AutoMind API。");
   }
 
   if (!res.ok) {
-    let message = `Request failed with status ${res.status}`;
+    let message = `请求失败，状态码：${res.status}`;
     let code = "HTTP_ERROR";
     try {
       const data = (await res.json()) as {

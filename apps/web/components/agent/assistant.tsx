@@ -24,7 +24,7 @@ function greeting(): ChatMessage {
     id: uid("sys"),
     role: "assistant",
     kind: "system_event",
-    content: `AutoMind Assistant ready · ${IS_MOCK ? "Mock Mode" : "Live API"}. Try “我有点冷” or ask about your battery.`,
+    content: `AutoMind 助手已就绪 · ${IS_MOCK ? "模拟模式" : "在线 API"}。可以试试“我有点冷”，或询问车辆电量。`,
     at: new Date().toISOString(),
   };
 }
@@ -134,7 +134,7 @@ export function AssistantPanel() {
           id: uid("err"),
           role: "assistant",
           kind: "system_event",
-          content: "AutoMind API is temporarily unavailable. Please retry.",
+          content: "AutoMind API 暂时不可用，请稍后重试。",
           at: new Date().toISOString(),
         },
       ]);
@@ -152,10 +152,10 @@ export function AssistantPanel() {
           </div>
           <div>
             <CardTitle className="text-base leading-tight">
-              AutoMind Assistant
+              AutoMind 智能助手
             </CardTitle>
             <p className="text-[11px] text-muted-foreground">
-              Natural language vehicle control · {IS_MOCK ? "Mock Mode" : "Live API"}
+              自然语言车辆控制 · {IS_MOCK ? "模拟模式" : "在线 API"}
             </p>
           </div>
         </div>
@@ -204,16 +204,16 @@ export function AssistantPanel() {
                 void handleSend();
               }
             }}
-            placeholder='Try “我有点冷”…'
+            placeholder='试试“我有点冷”…'
             rows={1}
             className="min-h-[42px] resize-none"
-            aria-label="Message AutoMind Assistant"
+            aria-label="向 AutoMind 智能助手发送消息"
           />
           <Button
             type="submit"
             size="icon"
             disabled={busy || !input.trim()}
-            aria-label="Send message"
+            aria-label="发送消息"
           >
             <Send className="h-4 w-4" />
           </Button>

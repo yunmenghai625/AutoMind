@@ -5,7 +5,7 @@ import type { PreferencesState } from "@/types/preferences";
 
 export async function getPreferences(): Promise<PreferencesState> {
   if (API_MODE === "mock") {
-    throw new Error("Preferences use the local store in mock mode.");
+    throw new Error("模拟模式下偏好设置保存在本地。 ");
   }
   return http<PreferencesState>("/api/v1/preferences", {
     headers: authHeaders(),

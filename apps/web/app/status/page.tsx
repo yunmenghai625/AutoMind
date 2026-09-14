@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { StatusView } from "@/features/status/status-view";
 
 export const metadata: Metadata = {
-  title: "System Status — AutoMind",
-  description: "Live status of the AutoMind platform services.",
+  title: "系统状态 — AutoMind",
+  description: "实时查看 AutoMind 平台服务状态。",
 };
 
 export default function StatusPage() {

@@ -12,22 +12,34 @@ const STATUS_STYLES: Record<ToolCall["status"], string> = {
   BLOCKED: "bg-destructive/15 text-destructive",
 };
 
+const STATUS_LABEL: Record<ToolCall["status"], string> = {
+  SUCCESS: "成功",
+  RUNNING: "执行中",
+  FAILED: "失败",
+  BLOCKED: "已拦截",
+};
+
 function formatParamValue(v: string | number | boolean): string {
   if (typeof v === "number") return String(v);
-  if (typeof v === "boolean") return v ? "true" : "false";
-  return v;
+  if (typeof v === "boolean") return v ? "是" : "否";
+  const labels: Record<string, string> = {
+    Driver: "主驾",
+    "Front Passenger": "前排乘客",
+    driver_door: "主驾车门",
+  };
+  return labels[v] ?? v;
 }
 
 function paramLabel(key: string): string {
   const map: Record<string, string> = {
-    zone: "Zone",
-    target: "Target",
-    level: "Level",
-    value: "Value",
-    speed: "Speed",
-    window: "Window",
-    light: "Light",
-    ac: "AC",
+    zone: "区域",
+    target: "目标值",
+    level: "挡位",
+    value: "数值",
+    speed: "车速",
+    window: "车窗",
+    light: "灯光",
+    ac: "空调",
   };
   return map[key] ?? key;
 }
@@ -51,7 +63,7 @@ export function ToolCallCard({ tool }: { tool: ToolCall }) {
             variant="outline"
             className={cn("font-mono text-[10px]", STATUS_STYLES[tool.status])}
           >
-            {tool.status}
+            {STATUS_LABEL[tool.status]}
           </Badge>
         </div>
 
@@ -74,7 +86,7 @@ export function ToolCallCard({ tool }: { tool: ToolCall }) {
 
         {tool.durationMs !== undefined && (
           <p className="mt-2 text-[10px] text-muted-foreground">
-            executed in {tool.durationMs}ms
+            执行耗时 {tool.durationMs}ms
           </p>
         )}
       </CardContent>

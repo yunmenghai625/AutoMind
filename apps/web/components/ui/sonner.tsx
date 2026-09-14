@@ -82,7 +82,7 @@ export function Toaster() {
           </div>
           <button
             onClick={() => removeToast(t.id)}
-            aria-label="Dismiss notification"
+            aria-label="关闭通知"
             className="text-muted-foreground transition hover:text-foreground"
           >
             <X className="h-4 w-4" />

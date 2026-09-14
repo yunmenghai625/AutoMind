@@ -77,7 +77,7 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
         type="button"
         role="tab"
         aria-selected={active}
-        aria-label={`${value} tab`}
+        aria-label={`${value} 标签页`}
         data-state={active ? "active" : "inactive"}
         className={cn(
           "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",

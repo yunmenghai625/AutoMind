@@ -151,28 +151,28 @@ export const MOCK_AGENT_RUNS: AgentRun[] = [
 
 export function buildTrace(runId: string): AgentStep[] {
   const base: AgentStep[] = [
-    { name: "Request", durationMs: 8, detail: "POST /api/v1/chat" },
-    { name: "Router", durationMs: 22, detail: "matched supervisor route" },
-    { name: "Context", durationMs: 13, detail: "session + vehicle twin loaded" },
+    { name: "接收请求", durationMs: 8, detail: "POST /api/v1/chat" },
+    { name: "意图路由", durationMs: 22, detail: "已匹配监督智能体路由" },
+    { name: "加载上下文", durationMs: 13, detail: "已加载会话与车辆数字孪生" },
   ];
   if (runId === "run_d1f0ab") {
     base.push(
-      { name: "Cockpit Agent", durationMs: 420, detail: "plan door_unlock" },
-      { name: "Safety Guard", durationMs: 4, detail: "BLOCKED: vehicle speed > 0" },
+      { name: "座舱智能体", durationMs: 420, detail: "规划车门解锁操作" },
+      { name: "安全防护", durationMs: 4, detail: "已拦截：车辆速度大于 0" },
     );
     return base;
   }
   if (runId === "run_f9027a") {
     base.push(
-      { name: "Knowledge Agent", durationMs: 3900, detail: "vector search timeout" },
+      { name: "知识智能体", durationMs: 3900, detail: "向量检索超时" },
     );
     return base;
   }
   base.push(
-    { name: "Cockpit Agent", durationMs: 420, detail: "plan & call tools" },
-    { name: "Safety Guard", durationMs: 4, detail: "policy ok" },
-    { name: "Tool", durationMs: 9, detail: "executed on Vehicle Twin" },
-    { name: "Response", durationMs: 280, detail: "stream assembled" },
+    { name: "座舱智能体", durationMs: 420, detail: "规划并调用工具" },
+    { name: "安全防护", durationMs: 4, detail: "策略校验通过" },
+    { name: "工具执行", durationMs: 9, detail: "已作用于车辆数字孪生" },
+    { name: "生成响应", durationMs: 280, detail: "已完成流式响应组装" },
   );
   return base;
 }
@@ -188,21 +188,21 @@ export function getAgentRunDetail(runId: string): AgentRunDetail | null {
     ...run,
     query:
       run.agent === "Cockpit"
-        ? "I'm a bit cold, please warm up the driver seat"
+        ? "我有点冷，请打开主驾座椅加热"
         : run.agent === "Knowledge"
-          ? "Can I keep driving when the TPMS warning light is on?"
+          ? "胎压报警灯亮了还能继续开吗？"
           : run.agent === "Diagnosis"
-            ? "[dashboard warning photo upload]"
-            : "get vehicle state",
+            ? "[上传仪表警告照片]"
+            : "获取车辆状态",
     trace,
   };
 }
 
 export const MOCK_SYSTEM_COMPONENTS: SystemComponent[] = [
-  { name: "Web", status: "operational", latencyMs: 182, detail: "Edge network healthy" },
-  { name: "API", status: "operational", latencyMs: 210, detail: "FastAPI serving normally" },
-  { name: "Database", status: "operational", latencyMs: 45, detail: "PostgreSQL healthy" },
-  { name: "Vector Search", status: "operational", latencyMs: 87, detail: "pgvector reachable" },
-  { name: "AI Provider", status: "operational", latencyMs: 620, detail: "Model endpoint responding" },
-  { name: "Storage", status: "operational", latencyMs: 34, detail: "Object storage healthy" },
+  { name: "Web 前端", status: "operational", latencyMs: 182, detail: "边缘网络运行正常" },
+  { name: "API 服务", status: "operational", latencyMs: 210, detail: "FastAPI 服务正常" },
+  { name: "数据库", status: "operational", latencyMs: 45, detail: "PostgreSQL 运行正常" },
+  { name: "向量检索", status: "operational", latencyMs: 87, detail: "pgvector 连接正常" },
+  { name: "AI 模型服务", status: "operational", latencyMs: 620, detail: "模型端点响应正常" },
+  { name: "对象存储", status: "operational", latencyMs: 34, detail: "对象存储运行正常" },
 ];

@@ -15,10 +15,10 @@ export function SiteFooter() {
         </div>
         <div className="flex items-center gap-4">
           <Link href="/status" className="hover:text-foreground">
-            Status
+            系统状态
           </Link>
           <Link
-            href="https://github.com"
+            href="https://github.com/yunmenghai625/AutoMind"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-foreground"

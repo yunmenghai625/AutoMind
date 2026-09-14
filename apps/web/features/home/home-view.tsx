@@ -38,10 +38,10 @@ const ICONS: Record<string, LucideIcon> = {
 };
 
 const EXPLORE = [
-  { href: "/cockpit", title: "AI Cockpit", desc: "Talk to your car", icon: Gauge },
-  { href: "/knowledge", title: "Knowledge RAG", desc: "Ask about your vehicle", icon: Database },
-  { href: "/diagnosis", title: "Diagnosis", desc: "Analyze dashboard photos", icon: ScanSearch },
-  { href: "/garage", title: "Garage", desc: "Vehicle health & recalls", icon: CarFront },
+  { href: "/cockpit", title: "智能座舱", desc: "用自然语言控制车辆", icon: Gauge },
+  { href: "/knowledge", title: "汽车知识库", desc: "查询车辆使用与养护知识", icon: Database },
+  { href: "/diagnosis", title: "智能诊断", desc: "分析仪表与警告灯照片", icon: ScanSearch },
+  { href: "/garage", title: "我的车库", desc: "查看车辆健康与召回信息", icon: CarFront },
 ];
 
 export function HomeView() {
@@ -54,29 +54,27 @@ export function HomeView() {
             <div className="inline-flex items-center gap-2">
               <Badge className="border-primary/40 bg-primary/10 text-primary">
                 <Sparkles className="h-3 w-3" />
-                Production-grade LLMOps for your car
+                面向汽车场景的生产级 LLMOps
               </Badge>
             </div>
             <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-              Your AI.
+              你的智能，
               <br />
-              Your Car.
+              你的爱车，
               <br />
-              Your Journey.
+              你的旅程。
             </h1>
             <p className="text-base text-muted-foreground">
-              An intelligent automotive AI platform powered by Agent, RAG,
-              Multimodal AI and Vehicle Digital Twin — orchestrated like a real
-              production system.
+              融合智能体、RAG、多模态 AI 与车辆数字孪生，按照真实生产系统标准构建的汽车智能平台。
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg">
                 <Link href="/cockpit">
-                  Launch Cockpit <ArrowRight className="h-4 w-4" />
+                  进入智能座舱 <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/architecture">Explore Architecture</Link>
+                <Link href="/architecture">查看技术架构</Link>
               </Button>
             </div>
           </div>
@@ -117,7 +115,7 @@ export function HomeView() {
       {/* Capabilities */}
       <section className="container mx-auto max-w-7xl px-4 pb-14">
         <div className="mb-6 flex items-center gap-2">
-          <h2 className="text-xl font-semibold">Capabilities</h2>
+          <h2 className="text-xl font-semibold">核心能力</h2>
           <MockBadge />
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -142,7 +140,7 @@ export function HomeView() {
 
       {/* Explore */}
       <section className="container mx-auto max-w-7xl px-4 pb-14">
-        <h2 className="mb-6 text-xl font-semibold">Explore</h2>
+        <h2 className="mb-6 text-xl font-semibold">开始探索</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {EXPLORE.map((e) => {
             const Icon = e.icon;

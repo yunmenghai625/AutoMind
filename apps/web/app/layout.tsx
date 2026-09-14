@@ -14,25 +14,25 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "AutoMind — Production Automotive AI Cockpit Platform",
+    default: "AutoMind — 生产级汽车智能座舱平台",
     template: "%s · AutoMind",
   },
   description:
-    "AutoMind is a production-grade automotive AI cockpit platform powered by Agent, RAG, Multimodal AI and Vehicle Digital Twin.",
+    "AutoMind 是融合智能体、RAG、多模态 AI 与车辆数字孪生的生产级汽车智能座舱平台。",
   keywords: [
     "AutoMind",
-    "Automotive AI",
-    "AI Cockpit",
-    "Vehicle Digital Twin",
+    "汽车人工智能",
+    "智能座舱",
+    "车辆数字孪生",
     "RAG",
     "LLMOps",
   ],
   authors: [{ name: "AutoMind" }],
   openGraph: {
     type: "website",
-    title: "AutoMind — Production Automotive AI Cockpit Platform",
+    title: "AutoMind — 生产级汽车智能座舱平台",
     description:
-      "Your AI. Your Car. Your Journey. An intelligent automotive AI platform.",
+      "你的智能，你的爱车，你的旅程。面向汽车场景的智能 AI 平台。",
   },
 };
 
@@ -51,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`}>
         <ThemeProvider
           attribute="class"

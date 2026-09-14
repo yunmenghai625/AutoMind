@@ -27,11 +27,13 @@ function Segmented<T extends string | number>({
   options,
   onChange,
   disabled,
+  getOptionLabel,
 }: {
   value: T;
   options: T[];
   onChange: (v: T) => void;
   disabled?: boolean;
+  getOptionLabel?: (value: T) => string;
 }) {
   return (
     <div
@@ -56,7 +58,7 @@ function Segmented<T extends string | number>({
             )}
             aria-pressed={active}
           >
-            {String(opt).includes("AUTO") || String(opt).length > 4 ? opt : String(opt)}
+            {getOptionLabel ? getOptionLabel(opt) : String(opt)}
           </button>
         );
       })}
@@ -89,21 +91,22 @@ export function CockpitPanel() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Manual Controls</CardTitle>
+        <CardTitle className="text-base">手动控制</CardTitle>
         <p className="text-xs text-muted-foreground">
-          Changes the same Vehicle State that the AI Agent uses.
+          手动操作与 AI 智能体共同控制同一车辆状态。
         </p>
       </CardHeader>
       <CardContent className="space-y-5">
         {/* AC */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <CoffeeSection label="Climate" />
+            <CoffeeSection label="空调温控" />
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">AC</span>
               <Segmented<AcStatus>
                 value={vehicle.acStatus}
                 options={["OFF", "ON"]}
+                getOptionLabel={(v) => (v === "ON" ? "开启" : "关闭")}
                 onChange={(v) => apply({ kind: "ac", value: v })}
               />
             </div>
@@ -121,7 +124,7 @@ export function CockpitPanel() {
                 >
                   <div>
                     <p className="text-[11px] text-muted-foreground capitalize">
-                      {zone === "driver" ? "Driver" : "Passenger"}
+                      {zone === "driver" ? "主驾" : "副驾"}
                     </p>
                     <p className="text-lg font-semibold tabular-nums">
                       <AnimatedNumber value={temp} suffix="°C" />
@@ -133,7 +136,7 @@ export function CockpitPanel() {
                       size="icon"
                       className="h-8 w-8"
                       onClick={() => tempButton(zone, -1)}
-                      aria-label={`Lower ${zone} temperature`}
+                      aria-label={`降低${zone === "driver" ? "主驾" : "副驾"}温度`}
                     >
                       <Minus className="h-3.5 w-3.5" />
                     </Button>
@@ -142,7 +145,7 @@ export function CockpitPanel() {
                       size="icon"
                       className="h-8 w-8"
                       onClick={() => tempButton(zone, 1)}
-                      aria-label={`Raise ${zone} temperature`}
+                      aria-label={`升高${zone === "driver" ? "主驾" : "副驾"}温度`}
                     >
                       <Plus className="h-3.5 w-3.5" />
                     </Button>
@@ -155,12 +158,12 @@ export function CockpitPanel() {
 
         {/* Seats */}
         <div className="space-y-2">
-          <CoffeeSection label="Seat Heating" />
+          <CoffeeSection label="座椅加热" />
           <div className="grid grid-cols-2 gap-3">
             {(["driver", "passenger"] as const).map((zone) => (
               <div key={zone}>
                 <p className="mb-1 text-[11px] text-muted-foreground capitalize">
-                  {zone === "driver" ? "Driver" : "Passenger"} · Level{" "}
+                  {zone === "driver" ? "主驾" : "副驾"} · 挡位{" "}
                   {zone === "driver"
                     ? vehicle.driverSeatHeat
                     : vehicle.passengerSeatHeat}
@@ -183,12 +186,12 @@ export function CockpitPanel() {
 
         {/* Windows */}
         <div className="space-y-2">
-          <CoffeeSection label="Windows" />
+          <CoffeeSection label="车窗" />
           <div className="grid grid-cols-2 gap-3">
             {(["FL", "FR"] as const).map((zone) => (
               <div key={zone}>
                 <p className="mb-1 text-[11px] text-muted-foreground">
-                  {zone === "FL" ? "Front Left" : "Front Right"} ·{" "}
+                  {zone === "FL" ? "左前车窗" : "右前车窗"} ·{" "}
                   {zone === "FL" ? vehicle.windowFL : vehicle.windowFR}%
                 </p>
                 <Segmented<WindowLevel>
@@ -203,10 +206,11 @@ export function CockpitPanel() {
 
         {/* Headlights */}
         <div className="space-y-2">
-          <CoffeeSection label="Exterior Lights" />
+          <CoffeeSection label="外部灯光" />
           <Segmented<HeadlightMode>
             value={vehicle.headlight}
             options={["OFF", "AUTO", "ON"]}
+            getOptionLabel={(v) => ({ OFF: "关闭", AUTO: "自动", ON: "开启" })[v]}
             onChange={(v) => apply({ kind: "headlight", value: v })}
           />
         </div>
