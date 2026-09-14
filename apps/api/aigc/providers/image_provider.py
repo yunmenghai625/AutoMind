@@ -1,6 +1,7 @@
 import base64
 from time import perf_counter
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 
@@ -33,7 +34,7 @@ class OpenAICompatibleImageProvider:
     async def generate(self, prompt: str) -> ImageGenerationResult:
         started = perf_counter()
         try:
-            async with httpx.AsyncClient(timeout=self._timeout) as client:
+            async with httpx.AsyncClient(timeout=self._timeout, follow_redirects=True) as client:
                 response = await client.post(
                     f"{self._base_url}/images/generations",
                     headers={"Authorization": f"Bearer {self._api_key}"},
@@ -44,15 +45,30 @@ class OpenAICompatibleImageProvider:
                         "response_format": "b64_json",
                     },
                 )
-            response.raise_for_status()
-            body: dict[str, Any] = response.json()
-            encoded = body["data"][0]["b64_json"]
-            content = base64.b64decode(encoded, validate=True)
+                response.raise_for_status()
+                body: dict[str, Any] = response.json()
+                item = body["data"][0]
+                encoded = item.get("b64_json")
+                if encoded:
+                    content = base64.b64decode(encoded, validate=True)
+                    content_type = "image/png"
+                else:
+                    image_url = item["url"]
+                    parsed = urlparse(image_url)
+                    if parsed.scheme != "https" or not parsed.netloc:
+                        raise ValueError("Image provider returned an unsafe URL")
+                    image_response = await client.get(image_url)
+                    image_response.raise_for_status()
+                    content = image_response.content
+                    content_type = image_response.headers.get("content-type", "image/png")
+                    content_type = content_type.split(";", 1)[0].strip().lower()
+                    if not content_type.startswith("image/") or not content:
+                        raise ValueError("Image provider returned invalid image content")
         except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as exc:
             raise ImageProviderError("Image generation request failed") from exc
         return ImageGenerationResult(
             content=content,
-            content_type="image/png",
+            content_type=content_type,
             provider=self.name,
             model=self.model,
             latency_ms=round((perf_counter() - started) * 1000),

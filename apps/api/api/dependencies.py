@@ -259,11 +259,12 @@ def get_theme_generation_service(
     if settings.aigc_asset_storage == "s3":
         store = S3ThemeAssetStore(
             endpoint=settings.r2_endpoint,
-            bucket=settings.r2_bucket,
+            bucket=settings.aigc_r2_bucket or settings.r2_bucket,
             access_key=settings.r2_access_key.get_secret_value() if settings.r2_access_key else "",
             secret_key=settings.r2_secret_key.get_secret_value() if settings.r2_secret_key else "",
             public_base_url=settings.r2_public_base_url,
             prefix=settings.aigc_storage_prefix,
+            proxy_base_url=f"{settings.api_v1_prefix}/aigc/assets",
         )
     else:
         store = LocalThemeAssetStore(settings.aigc_local_asset_dir)
@@ -320,12 +321,12 @@ def get_diagnosis_service(
     if settings.diagnosis_asset_storage == "s3":
         storage = S3CompatibleStorageProvider(
             endpoint=settings.r2_endpoint,
-            bucket=settings.r2_bucket,
+            bucket=settings.diagnosis_r2_bucket or settings.r2_bucket,
             access_key=settings.r2_access_key.get_secret_value() if settings.r2_access_key else "",
             secret_key=(
                 settings.r2_secret_key.get_secret_value() if settings.r2_secret_key else ""
             ),
-            public_base_url=settings.r2_public_base_url,
+            public_base_url=None,
             prefix=settings.diagnosis_storage_prefix,
         )
     else:

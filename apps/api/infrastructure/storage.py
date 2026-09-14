@@ -42,7 +42,7 @@ class S3CompatibleStorageProvider:
         bucket: str,
         access_key: str,
         secret_key: str,
-        public_base_url: str,
+        public_base_url: str | None,
         prefix: str,
     ) -> None:
         import boto3
@@ -61,7 +61,7 @@ class S3CompatibleStorageProvider:
             ),
         )
         self._bucket = bucket
-        self._public_base_url = public_base_url.rstrip("/")
+        self._public_base_url = public_base_url.rstrip("/") if public_base_url else None
         self._prefix = prefix.strip("/")
 
     async def put(self, *, key: str, content: bytes, content_type: str) -> StoredObject:
@@ -73,7 +73,12 @@ class S3CompatibleStorageProvider:
             Body=content,
             ContentType=content_type,
         )
-        return StoredObject(key=object_key, url=f"{self._public_base_url}/{object_key}")
+        url = (
+            f"{self._public_base_url}/{object_key}"
+            if self._public_base_url
+            else f"s3://{self._bucket}/{object_key}"
+        )
+        return StoredObject(key=object_key, url=url)
 
     async def delete(self, key: str) -> None:
         await asyncio.to_thread(self._client.delete_object, Bucket=self._bucket, Key=key)

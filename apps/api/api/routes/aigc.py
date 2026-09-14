@@ -3,7 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 from apps.api.aigc.repository import AigcRepository, UsageSubject
 from apps.api.aigc.schemas import (
@@ -17,6 +17,11 @@ from apps.api.aigc.service import (
     ThemeApplyService,
     ThemeGenerationService,
     ThemeNotFoundError,
+)
+from apps.api.aigc.storage import (
+    S3ThemeAssetStore,
+    ThemeAssetNotFoundError,
+    ThemeAssetStoreError,
 )
 from apps.api.aigc.theme_generator import InvalidThemeSpecError
 from apps.api.api.dependencies import (
@@ -138,9 +143,39 @@ async def get_aigc_metrics(
 
 
 @router.get("/assets/{filename}", include_in_schema=False)
-async def get_generated_asset(filename: str, request: Request) -> FileResponse:
+async def get_generated_asset(filename: str, request: Request) -> Response:
     safe_name = Path(filename).name
-    root = Path(request.app.state.settings.aigc_local_asset_dir).resolve()
+    settings = request.app.state.settings
+    if settings.aigc_asset_storage == "s3":
+        store = S3ThemeAssetStore(
+            endpoint=settings.r2_endpoint,
+            bucket=settings.aigc_r2_bucket or settings.r2_bucket,
+            access_key=settings.r2_access_key.get_secret_value() if settings.r2_access_key else "",
+            secret_key=(
+                settings.r2_secret_key.get_secret_value() if settings.r2_secret_key else ""
+            ),
+            public_base_url=None,
+            prefix=settings.aigc_storage_prefix,
+            proxy_base_url=f"{settings.api_v1_prefix}/aigc/assets",
+        )
+        try:
+            content, content_type = await store.get(safe_name)
+        except ThemeAssetNotFoundError as exc:
+            raise AppError(
+                "ASSET_NOT_FOUND", "Generated asset was not found", status_code=404
+            ) from exc
+        except ThemeAssetStoreError as exc:
+            raise AppError(
+                "ASSET_STORAGE_UNAVAILABLE",
+                "Asset storage is unavailable",
+                status_code=503,
+            ) from exc
+        return Response(
+            content=content,
+            media_type=content_type,
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
+    root = Path(settings.aigc_local_asset_dir).resolve()
     target = (root / safe_name).resolve()
     if target.parent != root or not target.is_file():
         raise AppError("ASSET_NOT_FOUND", "Generated asset was not found", status_code=404)

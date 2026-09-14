@@ -1,5 +1,5 @@
 import pytest
-from pydantic import ValidationError
+from pydantic import SecretStr, ValidationError
 
 from apps.api.core.config import Settings
 
@@ -25,6 +25,39 @@ def test_supabase_postgresql_url_uses_async_driver() -> None:
 def test_railway_postgres_url_uses_async_driver() -> None:
     settings = Settings(database_url="postgres://user:pass@db.example.com:5432/automind")
     assert settings.database_url.get_secret_value().startswith("postgresql+asyncpg://")
+
+
+def test_postgres_driver_url_is_forced_to_installed_asyncpg_driver() -> None:
+    settings = Settings(
+        database_url="  postgresql+psycopg://user:pass@db.example.com:5432/automind  "
+    )
+    assert (
+        settings.database_url.get_secret_value()
+        == "postgresql+asyncpg://user:pass@db.example.com:5432/automind"
+    )
+
+
+def test_secret_postgres_url_uses_async_driver() -> None:
+    settings = Settings(
+        database_url=SecretStr("postgresql://user:pass@db.example.com:5432/automind")
+    )
+    assert settings.database_url.get_secret_value().startswith("postgresql+asyncpg://")
+
+
+def test_railway_bucket_aws_variables_are_supported() -> None:
+    settings = Settings(
+        AWS_ENDPOINT_URL="https://t3.storageapi.dev",
+        AWS_S3_BUCKET_NAME="automind-assets-example",
+        AWS_ACCESS_KEY_ID="access-key",
+        AWS_SECRET_ACCESS_KEY="secret-key",
+    )
+
+    assert settings.r2_endpoint == "https://t3.storageapi.dev"
+    assert settings.r2_bucket == "automind-assets-example"
+    assert settings.r2_access_key is not None
+    assert settings.r2_access_key.get_secret_value() == "access-key"
+    assert settings.r2_secret_key is not None
+    assert settings.r2_secret_key.get_secret_value() == "secret-key"
 
 
 def test_product_secrets_are_required_in_production() -> None:

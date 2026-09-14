@@ -2,7 +2,7 @@ from functools import lru_cache
 from typing import Literal
 from uuid import UUID
 
-from pydantic import Field, SecretStr, field_validator, model_validator
+from pydantic import AliasChoices, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Environment = Literal["development", "test", "staging", "production"]
@@ -66,10 +66,21 @@ class Settings(BaseSettings):
     aigc_storage_prefix: str = "cockpit-themes/"
     aigc_asset_storage: Literal["local", "s3"] = "local"
     aigc_local_asset_dir: str = "data/generated/cockpit-themes"
-    r2_endpoint: str = ""
-    r2_bucket: str = ""
-    r2_access_key: SecretStr | None = None
-    r2_secret_key: SecretStr | None = None
+    r2_endpoint: str = Field(
+        default="", validation_alias=AliasChoices("R2_ENDPOINT", "AWS_ENDPOINT_URL")
+    )
+    r2_bucket: str = Field(
+        default="", validation_alias=AliasChoices("R2_BUCKET", "AWS_S3_BUCKET_NAME")
+    )
+    aigc_r2_bucket: str = ""
+    diagnosis_r2_bucket: str = ""
+    r2_access_key: SecretStr | None = Field(
+        default=None, validation_alias=AliasChoices("R2_ACCESS_KEY", "AWS_ACCESS_KEY_ID")
+    )
+    r2_secret_key: SecretStr | None = Field(
+        default=None,
+        validation_alias=AliasChoices("R2_SECRET_KEY", "AWS_SECRET_ACCESS_KEY"),
+    )
     r2_public_base_url: str = ""
     diagnosis_storage_prefix: str = "diagnosis/"
     diagnosis_asset_storage: Literal["local", "s3"] = "local"
@@ -125,10 +136,19 @@ class Settings(BaseSettings):
     @field_validator("database_url", mode="before")
     @classmethod
     def normalize_database_url(cls, value: object) -> object:
+        if isinstance(value, SecretStr):
+            value = value.get_secret_value()
         if isinstance(value, str):
-            for prefix in ("postgresql://", "postgres://"):
-                if value.startswith(prefix):
-                    return value.replace(prefix, "postgresql+asyncpg://", 1)
+            normalized = value.strip()
+            if "://" in normalized:
+                scheme, remainder = normalized.split("://", 1)
+                if (
+                    scheme == "postgres"
+                    or scheme == "postgresql"
+                    or scheme.startswith("postgresql+")
+                ):
+                    return f"postgresql+asyncpg://{remainder}"
+            return normalized
         return value
 
     @field_validator("log_level")
