@@ -22,6 +22,11 @@ def test_supabase_postgresql_url_uses_async_driver() -> None:
     assert settings.database_url.get_secret_value().startswith("postgresql+asyncpg://")
 
 
+def test_railway_postgres_url_uses_async_driver() -> None:
+    settings = Settings(database_url="postgres://user:pass@db.example.com:5432/automind")
+    assert settings.database_url.get_secret_value().startswith("postgresql+asyncpg://")
+
+
 def test_product_secrets_are_required_in_production() -> None:
     with pytest.raises(ValidationError):
         Settings(app_env="production", jwt_secret="", vin_hash_secret="")
