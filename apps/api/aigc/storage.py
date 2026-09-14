@@ -53,6 +53,7 @@ class S3ThemeAssetStore:
                 connect_timeout=10,
                 read_timeout=30,
                 retries={"max_attempts": 1, "mode": "standard"},
+                s3={"addressing_style": "virtual"},
             ),
         )
         self._bucket = bucket
