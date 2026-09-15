@@ -91,10 +91,10 @@ export function SiteHeader() {
           </Link>
           <div
             className="hidden h-7 w-7 items-center justify-center rounded-full bg-muted text-xs font-semibold md:flex"
-            aria-label="当前为演示用户"
-            title="演示用户"
+            aria-label="项目作者 yunmenghai625"
+            title="项目作者 yunmenghai625"
           >
-            AV
+            YM
           </div>
           <Button
             variant="ghost"

@@ -14,11 +14,8 @@ import {
  * Shared by both the AI Agent path and the manual cockpit controls:
  * they both mutate the SAME Vehicle State.
  *
- * Live mode write-through: after the local optimistic update, the action is
- * posted to the FastAPI backend (POST /api/v1/vehicle/control) and the
- * authoritative response state replaces the local value. Backend-rejected
- * actions keep the local optimistic value (Phase 1 backend cannot persist
- * AC / speed, which controlVehicle skips anyway).
+ * Live mode updates only from the authoritative backend response. Local
+ * optimistic state is restricted to explicit development Mock mode.
  */
 interface VehicleStore {
   vehicle: VehicleState;
@@ -30,6 +27,17 @@ export const useVehicleStore = create<VehicleStore>((set) => ({
   vehicle: DEFAULT_VEHICLE_STATE,
   setVehicle: (vehicle) => set({ vehicle }),
   apply: (action) => {
+    if (API_MODE === "live") {
+      void controlVehicle(action)
+        .then((next) => {
+          if (next) set(() => ({ vehicle: next }));
+        })
+        .catch(() => {
+          // Keep the last authoritative state when the backend rejects a write.
+        });
+      return;
+    }
+
     set(({ vehicle }) => {
       const next = { ...vehicle };
       switch (action.kind) {
@@ -64,14 +72,5 @@ export const useVehicleStore = create<VehicleStore>((set) => ({
       return { vehicle: next };
     });
 
-    if (API_MODE === "live") {
-      void controlVehicle(action)
-        .then((next) => {
-          if (next) set(() => ({ vehicle: next }));
-        })
-        .catch(() => {
-          // Keep the local optimistic value when the backend rejects the write.
-        });
-    }
   },
 }));

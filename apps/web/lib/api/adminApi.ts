@@ -1,12 +1,6 @@
 import { http, simulate } from "@/lib/api/apiClient";
 import { authHeaders } from "@/lib/api/identity";
 import { API_MODE } from "@/lib/config";
-import {
-  MOCK_ADMIN_METRICS,
-  MOCK_ADMIN_OVERVIEW,
-  MOCK_AGENT_RUNS,
-  getAgentRunDetail,
-} from "@/lib/mock/metrics";
 import type {
   AdminMetrics,
   AdminOverview,
@@ -26,6 +20,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   if (API_MODE === "live") {
     return http<AdminOverview>("/api/v1/admin/overview", { headers: authHeaders() });
   }
+  const { MOCK_ADMIN_OVERVIEW } = await import("@/lib/mock/metrics");
   return simulate(() => ({ ...MOCK_ADMIN_OVERVIEW, generatedAt: new Date().toISOString() }));
 }
 
@@ -33,6 +28,7 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
   if (API_MODE === "live") {
     return http<AdminMetrics>("/api/v1/admin/metrics", { headers: authHeaders() });
   }
+  const { MOCK_ADMIN_METRICS } = await import("@/lib/mock/metrics");
   return simulate(() => MOCK_ADMIN_METRICS);
 }
 
@@ -40,6 +36,7 @@ export async function getAgentRuns(): Promise<AgentRun[]> {
   if (API_MODE === "live") {
     return http<AgentRun[]>("/api/v1/admin/agent-runs", { headers: authHeaders() });
   }
+  const { MOCK_AGENT_RUNS } = await import("@/lib/mock/metrics");
   return simulate(() => MOCK_AGENT_RUNS);
 }
 
@@ -51,6 +48,7 @@ export async function getAgentRunDetailById(
       headers: authHeaders(),
     });
   }
+  const { getAgentRunDetail } = await import("@/lib/mock/metrics");
   return simulate(() => getAgentRunDetail(id), 200);
 }
 

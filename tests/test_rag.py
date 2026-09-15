@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from pathlib import Path
 from uuid import UUID, uuid4
 
 import pytest
@@ -6,6 +7,7 @@ import pytest
 from apps.api.rag.chunking import chunk_blocks, parse_markdown
 from apps.api.rag.embeddings import HashingEmbeddingProvider
 from apps.api.rag.entities import DocumentSummary, RetrievalHit
+from apps.api.rag.ingest_cli import _document_config
 from apps.api.rag.ingestion import DocumentIngestionService
 from apps.api.rag.reranker import LocalOverlapReranker
 from apps.api.rag.rewrite import RuleBasedQueryRewriter
@@ -50,6 +52,18 @@ class InMemoryKnowledgeRepository:
 
     async def fail_query(self, *, query_id, error_code: str) -> None:
         self.failed = error_code
+
+
+def test_project_knowledge_manifest_uses_non_oem_titles_and_stable_keys() -> None:
+    knowledge_dir = Path(__file__).parents[1] / "data" / "knowledge"
+
+    config = _document_config(knowledge_dir / "Vehicle_Manual.md")
+
+    assert config == {
+        "source_key": "vehicle_manual",
+        "title": "AutoMind 车辆安全知识卡",
+        "description": "依据公开安全资料自主整理的仪表与车辆安全说明，非真实车型手册。",
+    }
 
 
 def _hit(*, score: float = 0.8) -> RetrievalHit:

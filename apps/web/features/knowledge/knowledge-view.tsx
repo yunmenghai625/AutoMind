@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { IS_MOCK } from "@/lib/config";
 import { getKnowledgeSources, queryKnowledge } from "@/lib/api/knowledgeApi";
 import type {
   Citation,
@@ -186,7 +187,7 @@ export function KnowledgeView() {
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <PageHeader
         title="汽车知识库"
-        badge={<MockBadge />}
+        badge={IS_MOCK ? <MockBadge /> : undefined}
         description="基于车辆手册和使用指南的汽车知识 RAG，回答包含引用来源与检索详情。"
       />
       <div className="mt-6 grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
@@ -202,7 +203,7 @@ export function KnowledgeView() {
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0 border-b py-3">
             <CardTitle className="text-base">AI 知识助手</CardTitle>
-            <MockBadge />
+            {IS_MOCK && <MockBadge />}
           </CardHeader>
           <CardContent className="flex min-h-[520px] flex-col gap-4 p-4">
             <div className="flex items-center gap-2">

@@ -8,8 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { sendChat } from "@/lib/api/cockpitApi";
 import { IS_MOCK } from "@/lib/config";
-import { uid } from "@/lib/mock/chat";
 import type { ChatMessage } from "@/types/chat";
+
+let messageSequence = 0;
+function uid(prefix = "msg") {
+  messageSequence += 1;
+  return `${prefix}_${Date.now().toString(36)}_${messageSequence}`;
+}
 
 const SUGGESTIONS = [
   "我有点冷",

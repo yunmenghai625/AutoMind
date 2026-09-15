@@ -3,10 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request
 
 from apps.api.api.dependencies import (
+    get_admin_identity,
     get_document_ingestion_service,
     get_knowledge_repository,
     get_knowledge_service,
 )
+from apps.api.auth.service import AuthIdentity
 from apps.api.core.errors import AppError
 from apps.api.infrastructure.knowledge_repository import PostgresKnowledgeRepository
 from apps.api.rag.ingestion import DocumentIngestionError, DocumentIngestionService
@@ -53,6 +55,7 @@ async def list_knowledge_sources(
 async def ingest_document(
     payload: IngestDocumentRequest,
     service: Annotated[DocumentIngestionService, Depends(get_document_ingestion_service)],
+    _admin: Annotated[AuthIdentity, Depends(get_admin_identity)],
 ) -> IngestDocumentResponse:
     try:
         document = await service.ingest_markdown(

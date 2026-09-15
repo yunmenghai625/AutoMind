@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useVehicleStore } from "@/lib/store/vehicle-store";
+import { IS_MOCK } from "@/lib/config";
 import { MockBadge } from "@/components/common/mock-badge";
 
 export function VehicleTwinCard() {
@@ -25,7 +26,7 @@ export function VehicleTwinCard() {
     <Card>
       <CardHeader className="flex-row items-center justify-between space-y-0 py-3">
         <CardTitle className="text-base">车辆数字孪生</CardTitle>
-        <MockBadge />
+        {IS_MOCK && <MockBadge />}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_170px]">

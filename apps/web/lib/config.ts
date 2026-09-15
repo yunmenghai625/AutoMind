@@ -1,9 +1,9 @@
 /**
  * Central runtime configuration.
  *
- * The app boots in full Mock mode by default (`NEXT_PUBLIC_API_MODE=mock`).
- * Switching to `live` makes every API Service Layer call hit the real
- * FastAPI backend instead — no UI changes required.
+ * Mock mode is available only during local development. Production builds
+ * always fail closed to the live API so sample data can never be presented as
+ * production telemetry when an environment variable is missing.
  */
 
 export type ApiMode = "mock" | "live";
@@ -16,7 +16,10 @@ export const APP_TAGLINE =
   "生产级汽车智能座舱平台";
 
 export const API_MODE: ApiMode =
-  process.env.NEXT_PUBLIC_API_MODE === "live" ? "live" : "mock";
+  process.env.NODE_ENV !== "production" &&
+  process.env.NEXT_PUBLIC_API_MODE === "mock"
+    ? "mock"
+    : "live";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";

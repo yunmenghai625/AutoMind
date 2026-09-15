@@ -1,7 +1,6 @@
 import { http, simulate } from "@/lib/api/apiClient";
 import { authHeaders } from "@/lib/api/identity";
 import { API_MODE } from "@/lib/config";
-import { mockDiagnosis } from "@/lib/mock/diagnosis";
 import type { DiagnosisResult } from "@/types/diagnosis";
 
 /**
@@ -10,6 +9,7 @@ import type { DiagnosisResult } from "@/types/diagnosis";
  */
 export async function runDiagnosis(file: File): Promise<DiagnosisResult> {
   if (API_MODE !== "live") {
+    const { mockDiagnosis } = await import("@/lib/mock/diagnosis");
     return simulate(() => mockDiagnosis(file.name), 1800);
   }
   const form = new FormData();

@@ -1,55 +1,55 @@
-{"id":"tpms-01","query":"胎压灯一直亮是什么意思","expected_source":"Vehicle Manual","keywords":["气压","TPMS"]}
-{"id":"tpms-02","query":"胎压报警还能继续开吗","expected_source":"Vehicle Manual","keywords":["安全地点","轮胎"]}
-{"id":"tpms-03","query":"这辆车冷态胎压多少","expected_source":"Vehicle Manual","keywords":["250 kPa","36 psi"]}
-{"id":"tpms-04","query":"TPMS先闪一分钟再常亮是什么问题","expected_source":"Vehicle Manual","keywords":["系统故障","60 秒"]}
-{"id":"tpms-05","query":"轮胎已经瘪了还可以开吗","expected_source":"Vehicle Manual","keywords":["不要继续行驶","道路救援"]}
-{"id":"brake-01","query":"红色制动警告灯亮了怎么办","expected_source":"Vehicle Manual","keywords":["安全地点","道路救援"]}
-{"id":"brake-02","query":"刹车踏板变软还能行驶吗","expected_source":"Vehicle Manual","keywords":["不得继续驾驶","制动踏板"]}
-{"id":"door-01","query":"车辆移动时能开门吗","expected_source":"Vehicle Manual","keywords":["不得打开车门","P 挡"]}
-{"id":"door-02","query":"开车门前要注意什么","expected_source":"Vehicle Manual","keywords":["骑行者","行人"]}
-{"id":"warning-01","query":"红色仪表警告灯通常代表什么","expected_source":"Vehicle Manual","keywords":["立即安全停车","红色"]}
-{"id":"warning-02","query":"黄色警告灯亮起要怎么处理","expected_source":"Vehicle Manual","keywords":["尽快检查","黄色"]}
-{"id":"warning-03","query":"警告灯亮并且闻到异味怎么办","expected_source":"Vehicle Manual","keywords":["立即安全停车","异味"]}
-{"id":"warning-04","query":"警告灯伴随冒烟应该继续开吗","expected_source":"Vehicle Manual","keywords":["立即安全停车","冒烟"]}
-{"id":"charge-01","query":"日常充电上限设多少合适","expected_source":"EV Charging Guide","keywords":["80%","充电上限"]}
-{"id":"charge-02","query":"开始充电前挡位有什么要求","expected_source":"EV Charging Guide","keywords":["P 挡","开始充电"]}
-{"id":"charge-03","query":"车辆可以长期满电停放吗","expected_source":"EV Charging Guide","keywords":["100%","长期停放"]}
-{"id":"charge-04","query":"长期不用车电量保持多少","expected_source":"EV Charging Guide","keywords":["40% 至 60%","两周"]}
-{"id":"charge-05","query":"快充为什么后段速度变慢","expected_source":"EV Charging Guide","keywords":["降低功率","高电量"]}
-{"id":"charge-06","query":"长途补能适合用什么充电","expected_source":"EV Charging Guide","keywords":["直流快充","长途"]}
-{"id":"charge-07","query":"高温环境快充要注意什么","expected_source":"EV Charging Guide","keywords":["温控","高温"]}
-{"id":"cold-01","query":"冬天为什么充电慢","expected_source":"EV Charging Guide","keywords":["低温","充电功率"]}
-{"id":"cold-02","query":"冬季出发前怎样改善充电速度","expected_source":"EV Charging Guide","keywords":["电池预热","充电枪"]}
-{"id":"cold-03","query":"冬季续航应该怎么规划","expected_source":"EV Charging Guide","keywords":["预留更多续航","冬季"]}
-{"id":"storage-01","query":"电动车停两周需要做什么","expected_source":"EV Charging Guide","keywords":["40% 至 60%","持续耗电"]}
-{"id":"storage-02","query":"极低电量能长期停车吗","expected_source":"EV Charging Guide","keywords":["极低电量","避免"]}
-{"id":"storage-03","query":"电池长期存放应避免什么","expected_source":"EV Charging Guide","keywords":["高温","100%"]}
-{"id":"acc-01","query":"ACC自适应巡航会自动跟车吗","expected_source":"ADAS Manual","keywords":["跟随前车","接管"]}
-{"id":"acc-02","query":"大雨天能用自适应巡航吗","expected_source":"ADAS Manual","keywords":["大雨","退出"]}
-{"id":"acc-03","query":"传感器被挡住还能用ACC吗","expected_source":"ADAS Manual","keywords":["传感器被遮挡","退出"]}
-{"id":"lka-01","query":"车道保持是不是自动驾驶","expected_source":"ADAS Manual","keywords":["不代表自动驾驶","双手"]}
-{"id":"lka-02","query":"车道线模糊时LKA可靠吗","expected_source":"ADAS Manual","keywords":["无法识别车道","车道线模糊"]}
-{"id":"lka-03","query":"施工改道时车道保持怎么处理","expected_source":"ADAS Manual","keywords":["施工改道","控制方向盘"]}
-{"id":"aeb-01","query":"AEB能保证避免碰撞吗","expected_source":"ADAS Manual","keywords":["不能保证","碰撞"]}
-{"id":"aeb-02","query":"自动紧急制动摄像头脏了有影响吗","expected_source":"ADAS Manual","keywords":["脏污","检测能力"]}
-{"id":"aeb-03","query":"目标突然切入时AEB一定能刹住吗","expected_source":"ADAS Manual","keywords":["突然切入","不能保证"]}
-{"id":"adas-01","query":"驾驶辅助可以代替驾驶员判断吗","expected_source":"ADAS Manual","keywords":["不能替代","驾驶员"]}
-{"id":"adas-02","query":"收到接管提示应该怎么做","expected_source":"ADAS Manual","keywords":["立即接管","提示"]}
-{"id":"adas-03","query":"使用辅助驾驶前检查什么","expected_source":"ADAS Manual","keywords":["传感器清洁","天气"]}
-{"id":"adas-04","query":"开辅助驾驶可以分心吗","expected_source":"ADAS Manual","keywords":["不得","分心驾驶"]}
-{"id":"maint-01","query":"基础保养多久做一次","expected_source":"Maintenance Guide","keywords":["12 个月","10000 km"]}
-{"id":"maint-02","query":"基础检查包括哪些项目","expected_source":"Maintenance Guide","keywords":["轮胎","制动系统"]}
-{"id":"maint-03","query":"恶劣路况需要缩短保养周期吗","expected_source":"Maintenance Guide","keywords":["缩短检查间隔","恶劣路况"]}
-{"id":"tire-01","query":"胎压多久检查一次","expected_source":"Maintenance Guide","keywords":["每月","冷态胎压"]}
-{"id":"tire-02","query":"轮胎鼓包需要更换吗","expected_source":"Maintenance Guide","keywords":["鼓包","应更换"]}
-{"id":"tire-03","query":"轮胎换位后要做什么","expected_source":"Maintenance Guide","keywords":["重新学习","胎压监测"]}
-{"id":"wiper-01","query":"雨刮出现条纹要换吗","expected_source":"Maintenance Guide","keywords":["胶条","条纹"]}
-{"id":"wiper-02","query":"雨刮通常多久检查更换","expected_source":"Maintenance Guide","keywords":["6 至 12 个月","更换"]}
-{"id":"wiper-03","query":"抬起雨刮臂要注意什么","expected_source":"Maintenance Guide","keywords":["弹回","前风挡"]}
-{"id":"fluid-01","query":"制动液可以混用吗","expected_source":"Maintenance Guide","keywords":["不可混用","规格"]}
-{"id":"fluid-02","query":"制动液液位持续下降怎么办","expected_source":"Maintenance Guide","keywords":["停止驾驶","检修"]}
-{"id":"coolant-01","query":"热车时能打开冷却液壶吗","expected_source":"Maintenance Guide","keywords":["烫伤","冷却后"]}
-{"id":"coolant-02","query":"冷却液反复减少怎么办","expected_source":"Maintenance Guide","keywords":["停止使用车辆","检修"]}
+{"id":"tpms-01","query":"胎压灯一直亮是什么意思","expected_source":"AutoMind 车辆安全知识卡","keywords":["明显低压","TPMS"]}
+{"id":"tpms-02","query":"胎压报警还能继续开吗","expected_source":"AutoMind 车辆安全知识卡","keywords":["安全地点","轮胎"]}
+{"id":"tpms-03","query":"正确胎压应该在哪里查看","expected_source":"AutoMind 车辆安全知识卡","keywords":["门框标签","车辆说明"]}
+{"id":"tpms-04","query":"胎压提示除了低压还可能是什么问题","expected_source":"AutoMind 车辆安全知识卡","keywords":["系统本身","检查"]}
+{"id":"tpms-05","query":"轮胎已经瘪了还可以开吗","expected_source":"AutoMind 车辆安全知识卡","keywords":["不应继续","道路救援"]}
+{"id":"brake-01","query":"制动系统提示持续存在怎么办","expected_source":"AutoMind 车辆安全知识卡","keywords":["安全","停车"]}
+{"id":"brake-02","query":"刹车踏板变软还能行驶吗","expected_source":"AutoMind 车辆安全知识卡","keywords":["不要继续","制动"]}
+{"id":"door-01","query":"车辆移动时能开门吗","expected_source":"AutoMind 车辆安全知识卡","keywords":["不应打开车门","停止"]}
+{"id":"door-02","query":"开车门前要注意什么","expected_source":"AutoMind 车辆安全知识卡","keywords":["骑行者","行人"]}
+{"id":"warning-01","query":"遇到不认识的仪表警告灯怎么办","expected_source":"AutoMind 车辆安全知识卡","keywords":["仪表文字提示","车辆说明"]}
+{"id":"warning-02","query":"能只按警告灯颜色判断还能不能开吗","expected_source":"AutoMind 车辆安全知识卡","keywords":["不能","车型"]}
+{"id":"warning-03","query":"警告灯亮并且闻到异味怎么办","expected_source":"AutoMind 车辆安全知识卡","keywords":["安全位置","专业人员"]}
+{"id":"warning-04","query":"警告灯伴随冒烟应该继续开吗","expected_source":"AutoMind 车辆安全知识卡","keywords":["停车","冒烟"]}
+{"id":"charge-01","query":"所有电动车日常充电都应该固定到80%吗","expected_source":"AutoMind 电动车充电知识卡","keywords":["没有","固定"]}
+{"id":"charge-02","query":"开始充电前应该怎么操作","expected_source":"AutoMind 电动车充电知识卡","keywords":["车辆","提示"]}
+{"id":"charge-03","query":"长期停车能直接套用其他车型的电量建议吗","expected_source":"AutoMind 电动车充电知识卡","keywords":["具体车型","存放建议"]}
+{"id":"charge-04","query":"长期不用电动车应该怎样确定存放电量","expected_source":"AutoMind 电动车充电知识卡","keywords":["车型","定期确认"]}
+{"id":"charge-05","query":"快充为什么后段速度变慢","expected_source":"AutoMind 电动车充电知识卡","keywords":["降低充电功率","电量较高"]}
+{"id":"charge-06","query":"途中快速补能适合用什么充电","expected_source":"AutoMind 电动车充电知识卡","keywords":["直流快充","途中"]}
+{"id":"charge-07","query":"高温环境充电要注意什么","expected_source":"AutoMind 电动车充电知识卡","keywords":["保护机制","车辆"]}
+{"id":"cold-01","query":"冬天为什么充电慢","expected_source":"AutoMind 电动车充电知识卡","keywords":["极端温度","充电功率"]}
+{"id":"cold-02","query":"冬季出发前怎样改善车辆状态","expected_source":"AutoMind 电动车充电知识卡","keywords":["预热","连接电源"]}
+{"id":"cold-03","query":"冬季续航应该怎么规划","expected_source":"AutoMind 电动车充电知识卡","keywords":["预留","续航"]}
+{"id":"storage-01","query":"电动车长期停放前需要做什么","expected_source":"AutoMind 电动车充电知识卡","keywords":["存放建议","电量"]}
+{"id":"storage-02","query":"长期停车可以忽视低电量提示吗","expected_source":"AutoMind 电动车充电知识卡","keywords":["不要","低电量"]}
+{"id":"storage-03","query":"电池长期存放需要关注什么","expected_source":"AutoMind 电动车充电知识卡","keywords":["环境条件","车型"]}
+{"id":"acc-01","query":"ACC自适应巡航会自动跟车吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["跟车距离","接管"]}
+{"id":"acc-02","query":"能见度差时能用自适应巡航吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["能见度差","谨慎使用"]}
+{"id":"acc-03","query":"传感器被挡住还能用ACC吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["传感器视野受阻","退出"]}
+{"id":"lka-01","query":"车道保持是不是自动驾驶","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["不能替代","双手"]}
+{"id":"lka-02","query":"车道线模糊时LKA可靠吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["识别能力","车道线不清"]}
+{"id":"lka-03","query":"施工改道时车道保持怎么处理","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["施工改道","控制方向盘"]}
+{"id":"aeb-01","query":"AEB能保证避免碰撞吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["不能保证","碰撞"]}
+{"id":"aeb-02","query":"自动紧急制动摄像头被挡有影响吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["受遮挡","受限"]}
+{"id":"aeb-03","query":"突发情况下AEB一定能刹住吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["不能保证","突发"]}
+{"id":"adas-01","query":"驾驶辅助可以代替驾驶员判断吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["不是自动驾驶","驾驶员"]}
+{"id":"adas-02","query":"收到接管提示应该怎么做","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["立即接管","提示"]}
+{"id":"adas-03","query":"使用辅助驾驶前检查什么","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["传感器","道路"]}
+{"id":"adas-04","query":"开辅助驾驶可以分心吗","expected_source":"AutoMind 驾驶辅助知识卡","keywords":["不得","分心驾驶"]}
+{"id":"maint-01","query":"所有车辆都按一万公里做基础保养吗","expected_source":"AutoMind 车辆维护知识卡","keywords":["不存在","统一数值"]}
+{"id":"maint-02","query":"基础检查包括哪些项目","expected_source":"AutoMind 车辆维护知识卡","keywords":["轮胎","制动"]}
+{"id":"maint-03","query":"恶劣路况需要更频繁检查吗","expected_source":"AutoMind 车辆维护知识卡","keywords":["更频繁","保养计划"]}
+{"id":"tire-01","query":"胎压应该什么时候检查","expected_source":"AutoMind 车辆维护知识卡","keywords":["冷胎","定期"]}
+{"id":"tire-02","query":"轮胎鼓包需要继续使用吗","expected_source":"AutoMind 车辆维护知识卡","keywords":["鼓包","专业人员"]}
+{"id":"tire-03","query":"轮胎正确压力在哪里看","expected_source":"AutoMind 车辆维护知识卡","keywords":["门框标签","最大允许压力"]}
+{"id":"wiper-01","query":"雨刮出现条纹要检查什么","expected_source":"AutoMind 车辆维护知识卡","keywords":["玻璃","胶条"]}
+{"id":"wiper-02","query":"所有车型的雨刮更换方式一样吗","expected_source":"AutoMind 车辆维护知识卡","keywords":["因车型而异","适配尺寸"]}
+{"id":"wiper-03","query":"抬起雨刮臂要注意什么","expected_source":"AutoMind 车辆维护知识卡","keywords":["弹回","前风挡"]}
+{"id":"fluid-01","query":"制动液可以按通用建议混用吗","expected_source":"AutoMind 车辆维护知识卡","keywords":["不得","混用"]}
+{"id":"fluid-02","query":"制动能力下降怎么办","expected_source":"AutoMind 车辆维护知识卡","keywords":["停车","专业"]}
+{"id":"coolant-01","query":"热车时能打开冷却液加注口吗","expected_source":"AutoMind 车辆维护知识卡","keywords":["不要","烫伤"]}
+{"id":"coolant-02","query":"冷却系统泄漏或高温怎么办","expected_source":"AutoMind 车辆维护知识卡","keywords":["停车","检查"]}
 {"id":"none-01","query":"车载咖啡机怎么清洗","should_answer":false,"keywords":[]}
 {"id":"none-02","query":"这辆车支持哪种卫星电话","should_answer":false,"keywords":[]}
 {"id":"none-03","query":"后排游戏机如何升级固件","should_answer":false,"keywords":[]}

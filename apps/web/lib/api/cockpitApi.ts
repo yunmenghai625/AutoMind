@@ -1,7 +1,6 @@
 import { http, simulate } from "@/lib/api/apiClient";
 import { authHeaders } from "@/lib/api/identity";
 import { API_MODE } from "@/lib/config";
-import { mockChatReply } from "@/lib/mock/chat";
 import { useVehicleStore } from "@/lib/store/vehicle-store";
 import type { SendChatRequest, SendChatResponse } from "@/types/chat";
 
@@ -26,6 +25,7 @@ export async function sendChat(
     }
     return outcome;
   }
+  const { mockChatReply } = await import("@/lib/mock/chat");
   return simulate(() => {
     const vehicle = useVehicleStore.getState().vehicle;
     const outcome = mockChatReply(req.message, vehicle);

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "license": "AutoMind project-authored demonstration knowledge; see DATA_SOURCES.md",
+  "documents": {
+    "ADAS_Manual.md": {
+      "source_key": "adas_manual",
+      "title": "AutoMind 驾驶辅助知识卡",
+      "description": "依据公开安全资料自主整理的通用驾驶辅助说明，非车企手册。"
+    },
+    "EV_Charging_Guide.md": {
+      "source_key": "ev_charging_guide",
+      "title": "AutoMind 电动车充电知识卡",
+      "description": "依据公开资料自主整理的通用电动车充电说明，非车型专属建议。"
+    },
+    "Maintenance_Guide.md": {
+      "source_key": "maintenance_guide",
+      "title": "AutoMind 车辆维护知识卡",
+      "description": "依据公开安全资料自主整理的通用维护说明，不提供车型专属周期。"
+    },
+    "Vehicle_Manual.md": {
+      "source_key": "vehicle_manual",
+      "title": "AutoMind 车辆安全知识卡",
+      "description": "依据公开安全资料自主整理的仪表与车辆安全说明，非真实车型手册。"
+    }
+  }
+}

@@ -28,6 +28,7 @@ Copyright © 2026 yunmenghai625。AutoMind 是个人独立开发的非商业作�
 - 车辆状态持久化、属性/区域/值域校验、乐观锁和请求级审计。
 - LangGraph 座舱 Agent、SSE、typed tools；任何车控都必须经过独立 SafetyPolicyEngine。
 - pgvector + 全文混合检索、重排、低置信度改写、文档/章节/页码/原文引用与无证据拒答。
+- RAG 使用项目作者依据公开资料自主整理的通用知识卡，不分发或冒充车企官方手册。
 - ThemeSpec 主题生成和显式应用；仪表图片净化、结构化识别、置信度闸门、风险分级和引用。
 - Guest/Bearer JWT 身份、偏好、车辆档案、VIN HMAC 摘要、召回查询与用户反馈。
 - request/trace/run 关联、HTTP/LLM/Agent/Tool/RAG 指标、Redis 限流、配额、预算降级、
@@ -108,7 +109,7 @@ Secret 标记的合成测试流量，不是实际用户量，也不是公网容�
 
 ## Deployment
 
-- `railway.json`：Dockerfile 构建、发布前 Alembic migration、启动命令与健康检查。
+- `railway.json`：Dockerfile 构建、发布前 Alembic migration 与自主知识卡同步、启动命令与健康检查。
 - `apps/web/vercel.json`：Vercel Next.js monorepo 配置，并关闭与 Actions 重复的原生 Git 发布。
 - `deploy/*.env.example` 与 `apps/web/.env.*.example`：staging/production 变量清单，不含凭据。
 - `.github/workflows/ci.yml`：常规后端、数据库、RAG、前端和容器验证。

@@ -1,12 +1,11 @@
 "use client";
 
-import { CarFront, Gauge, HeartPulse, Search, ShieldAlert, Timer } from "lucide-react";
+import { CarFront, Gauge, HeartPulse, ShieldAlert, Timer } from "lucide-react";
 import * as React from "react";
 import { PageHeader } from "@/components/common/page-header";
 import { MockBadge } from "@/components/common/mock-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { getGarageVehicle, getRecalls } from "@/lib/api/garageApi";
 import { IS_MOCK } from "@/lib/config";
@@ -38,7 +37,6 @@ export function GarageView() {
   const [recallStatus, setRecallStatus] = React.useState<
     "success" | "cached" | "degraded" | "unavailable"
   >("success");
-  const [filter, setFilter] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -74,33 +72,6 @@ export function GarageView() {
   }
 
   const maskedVin = vehicle.vin;
-  const firstRecall = recalls[0] ?? null;
-  const items = [
-    {
-      id: "recall-" + (firstRecall?.id ?? "none"),
-      kind: "recall" as const,
-      title: firstRecall?.component ?? "-",
-      detail: firstRecall?.recommendedAction ?? "-",
-      meta: firstRecall ? `发布于 ${firstRecall.issuedAt} · ${RISK_LABEL[firstRecall.risk]}` : "-",
-    },
-    {
-      id: "service-1",
-      kind: "service" as const,
-      title: "年度保养即将到期",
-      detail: "建议在行驶里程达到 15,000 km 时进行保养。",
-      meta: "距下次保养约 2,158 km",
-    },
-  ];
-
-  const q = filter.trim().toLowerCase();
-  const visible = items.filter(
-    (i) =>
-      !q ||
-      i.title.toLowerCase().includes(q) ||
-      i.detail.toLowerCase().includes(q) ||
-      i.meta.toLowerCase().includes(q),
-  );
-
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <PageHeader
@@ -205,39 +176,13 @@ export function GarageView() {
         <Card>
           <CardHeader className="border-b py-3">
             <CardTitle className="flex items-center gap-2 text-sm">
-              保养与通知
+              保养计划
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 pt-4">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                placeholder="筛选保养与通知…"
-                className="pl-8"
-                aria-label="筛选保养通知"
-              />
-            </div>
-            {visible.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                没有与“{filter}”匹配的项目。
-              </p>
-            )}
-            {visible.map((i) => (
-              <div key={i.id} className="rounded-lg border bg-card p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm font-medium">{i.title}</p>
-                  <Badge variant={i.kind === "recall" ? "warning" : "outline"} className="text-[10px]">
-                    {i.kind === "recall" ? "召回" : "保养"}
-                  </Badge>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{i.detail}</p>
-                {i.meta && (
-                  <p className="mt-1 text-[11px] text-muted-foreground/80">{i.meta}</p>
-                )}
-              </div>
-            ))}
+          <CardContent className="pt-4">
+            <p className="text-sm text-muted-foreground">
+              当前版本尚未接入真实保养计划数据。为避免误导，不展示估算或模拟提醒。
+            </p>
           </CardContent>
         </Card>
 

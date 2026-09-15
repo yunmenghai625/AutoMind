@@ -1,7 +1,6 @@
 import { http, simulate } from "@/lib/api/apiClient";
 import { authHeaders } from "@/lib/api/identity";
 import { API_MODE } from "@/lib/config";
-import { MOCK_GARAGE_VEHICLE, MOCK_RECALLS } from "@/lib/mock/garage";
 import type { GarageVehicle, RecallRecord } from "@/types/vehicle";
 
 /**
@@ -15,6 +14,7 @@ export async function getGarageVehicle(): Promise<GarageVehicle> {
       headers: authHeaders(),
     });
   }
+  const { MOCK_GARAGE_VEHICLE } = await import("@/lib/mock/garage");
   return simulate(() => MOCK_GARAGE_VEHICLE);
 }
 
@@ -31,5 +31,6 @@ export async function getRecalls(): Promise<RecallResult> {
       { headers: authHeaders() },
     );
   }
+  const { MOCK_RECALLS } = await import("@/lib/mock/garage");
   return simulate(() => ({ recalls: MOCK_RECALLS, status: "success", cached: false }));
 }

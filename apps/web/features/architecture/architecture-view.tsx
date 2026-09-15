@@ -6,7 +6,6 @@ import {
   BrainCircuit,
   CarFront,
   Cloud,
-  CloudCog,
   Container,
   Database,
   FileSearch,
@@ -19,7 +18,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { MockBadge } from "@/components/common/mock-badge";
 import { PageHeader } from "@/components/common/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -94,11 +92,12 @@ const DATA_LAYERS = [
 ];
 
 const INFRA = [
-  { name: "Cloudflare", icon: CloudCog, note: "CDN 与边缘网络" },
-  { name: "Railway", icon: Server, note: "API 托管" },
-  { name: "Supabase", icon: Cloud, note: "Postgres 与认证" },
-  { name: "Upstash", icon: Container, note: "无服务器 Redis" },
-  { name: "Grafana", icon: ShieldCheck, note: "可观测性" },
+  { name: "Vercel", icon: Cloud, note: "Next.js 前端托管" },
+  { name: "Railway", icon: Server, note: "FastAPI 容器托管" },
+  { name: "Railway PostgreSQL", icon: Database, note: "PostgreSQL 与 pgvector" },
+  { name: "Railway Redis", icon: HardDrive, note: "限流、会话与缓存" },
+  { name: "Railway Bucket", icon: Container, note: "S3 兼容对象存储" },
+  { name: "Grafana Cloud", icon: ShieldCheck, note: "OpenTelemetry 可观测性" },
   { name: "GitHub Actions", icon: GitBranch, note: "持续集成与部署" },
 ];
 
@@ -112,7 +111,6 @@ export function ArchitectureView() {
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <PageHeader
         title="技术架构"
-        badge={<MockBadge />}
         description="展示 AutoMind 前端、智能体运行时与数据层之间的协作关系。"
       />
 
@@ -227,7 +225,7 @@ export function ArchitectureView() {
         aria-label="基础设施"
       >
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">基础设施</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {INFRA.map((f) => (
             <Card key={f.name} className="transition-colors hover:border-primary/40">
               <CardContent className="flex items-center gap-3 pt-4">
@@ -250,7 +248,7 @@ export function ArchitectureView() {
             已预留 SSE 流式通道
           </Badge>
           <Badge variant="outline" className="text-xs">
-            支持模拟与在线 API 切换
+            公开环境强制连接在线 API
           </Badge>
         </div>
       </motion.section>

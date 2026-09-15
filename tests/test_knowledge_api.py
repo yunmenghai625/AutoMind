@@ -4,10 +4,12 @@ from uuid import uuid4
 from fastapi.testclient import TestClient
 
 from apps.api.api.dependencies import (
+    get_admin_identity,
     get_document_ingestion_service,
     get_knowledge_repository,
     get_knowledge_service,
 )
+from apps.api.auth.service import AuthIdentity
 from apps.api.rag.entities import (
     CitationData,
     DocumentSummary,
@@ -116,6 +118,11 @@ def test_query_knowledge_returns_traceable_citation(client: TestClient) -> None:
 
 def test_ingest_markdown_endpoint_returns_index_summary(client: TestClient) -> None:
     _override_knowledge_dependencies(client)
+    client.app.dependency_overrides[get_admin_identity] = lambda: AuthIdentity(
+        kind="registered",
+        user_id=uuid4(),
+        role="admin",
+    )
 
     response = client.post(
         "/api/v1/knowledge/documents/ingest",
@@ -129,3 +136,18 @@ def test_ingest_markdown_endpoint_returns_index_summary(client: TestClient) -> N
     assert response.status_code == 200
     assert response.json()["chunks"] == 2
     assert response.json()["status"] == "indexed"
+
+
+def test_ingest_markdown_endpoint_rejects_guest(client: TestClient) -> None:
+    _override_knowledge_dependencies(client)
+
+    response = client.post(
+        "/api/v1/knowledge/documents/ingest",
+        json={
+            "sourceKey": "unsafe-public-write",
+            "title": "不应写入",
+            "content": "未认证用户不能修改线上知识库。",
+        },
+    )
+
+    assert response.status_code == 401

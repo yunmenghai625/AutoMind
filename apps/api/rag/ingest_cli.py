@@ -30,6 +30,20 @@ def _document_paths(paths: list[Path]) -> list[Path]:
     return documents
 
 
+def _document_config(path: Path) -> dict[str, str]:
+    manifest_path = path.parent / "manifest.json"
+    if not manifest_path.is_file():
+        return {}
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    values = payload.get("documents", {}).get(path.name, {})
+    if not isinstance(values, dict):
+        raise ValueError(f"Invalid knowledge manifest entry: {path.name}")
+    allowed = {"source_key", "title", "description"}
+    return {
+        key: value for key, value in values.items() if key in allowed and isinstance(value, str)
+    }
+
+
 async def _run(paths: list[Path]) -> int:
     settings = get_settings()
     provider = build_embedding_provider(settings)
@@ -42,7 +56,7 @@ async def _run(paths: list[Path]) -> int:
             batch_size=settings.embedding_batch_size,
         )
         for path in _document_paths(paths):
-            document = await service.ingest_file(path)
+            document = await service.ingest_file(path, **_document_config(path))
             indexed.append(
                 {
                     "source_key": document.source_key,

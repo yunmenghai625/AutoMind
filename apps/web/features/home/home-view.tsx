@@ -3,26 +3,21 @@
 import {
   Activity,
   ArrowRight,
-  Blocks,
   CarFront,
-  CheckCircle2,
   Database,
   Gauge,
   Layers,
   ScanSearch,
   ShieldCheck,
   Sparkles,
-  Timer,
-  Wrench,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
-import { MockBadge } from "@/components/common/mock-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ARCHITECTURE_FLOW, CORE_CAPABILITIES, HERO_METRICS } from "@/lib/mock/homepage";
+import { ARCHITECTURE_FLOW, CORE_CAPABILITIES, PLATFORM_STACK } from "@/lib/content/homepage";
 
 const ICONS: Record<string, LucideIcon> = {
   CarFront,
@@ -31,10 +26,6 @@ const ICONS: Record<string, LucideIcon> = {
   ScanSearch,
   ShieldCheck,
   Activity,
-  CheckCircle2,
-  Wrench,
-  Timer,
-  Blocks,
 };
 
 const EXPLORE = [
@@ -80,13 +71,13 @@ export function HomeView() {
           </div>
 
           <div className="grid w-full max-w-md grid-cols-2 gap-3">
-            {HERO_METRICS.map((m) => {
+            {PLATFORM_STACK.map((m) => {
               const Icon = ICONS[m.icon] ?? ActivitiesFallback;
               return (
                 <div key={m.label} className="rounded-xl border bg-card p-4">
                   <Icon className="h-4 w-4 text-primary" />
-                  <p className="mt-2 text-xl font-bold tabular-nums">{m.value}</p>
-                  <p className="text-xs text-muted-foreground">{m.label}</p>
+                  <p className="mt-2 text-sm font-semibold">{m.value}</p>
+                  <p className="text-[11px] text-muted-foreground">{m.label}</p>
                 </div>
               );
             })}
@@ -114,10 +105,7 @@ export function HomeView() {
 
       {/* Capabilities */}
       <section className="container mx-auto max-w-7xl px-4 pb-14">
-        <div className="mb-6 flex items-center gap-2">
-          <h2 className="text-xl font-semibold">核心能力</h2>
-          <MockBadge />
-        </div>
+        <h2 className="mb-6 text-xl font-semibold">核心能力</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {CORE_CAPABILITIES.map((c) => {
             const Icon = ICONS[c.icon] ?? ActivitiesFallback;
