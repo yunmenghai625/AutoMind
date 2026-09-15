@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "AutoMind API"
-    app_version: str = "1.0.0"
+    app_version: str = "1.0.2"
     app_env: Environment = "development"
     api_v1_prefix: str = "/api/v1"
     log_level: str = "INFO"

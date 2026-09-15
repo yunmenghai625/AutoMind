@@ -1,4 +1,4 @@
-# AutoMind 1.0.1
+# AutoMind 1.0.2
 
 AutoMind 是面向公网运行的汽车 AI Agent 产品：Next.js 驾驶舱连接 FastAPI、PostgreSQL/
 pgvector 与 Redis，提供车辆数字孪生、自然语言座舱控制、带引用的汽车知识 RAG、AI 主题、
