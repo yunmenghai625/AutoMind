@@ -193,6 +193,9 @@ def test_postgres_rag_ingests_retrieves_cites_and_audits() -> None:
     request_id = f"rag-query-{uuid4()}"
     no_evidence_request_id = f"rag-no-evidence-{uuid4()}"
     app = create_app(Settings(app_env="test", database_url=database_url))
+    app.dependency_overrides[get_admin_identity] = lambda: AuthIdentity(
+        kind="registered", user_id=uuid4(), role="admin"
+    )
     try:
         with TestClient(app) as client:
             ingested = client.post(
