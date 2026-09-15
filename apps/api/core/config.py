@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     jwt_secret: SecretStr | None = None
     jwt_issuer: str = ""
     jwt_audience: str = "authenticated"
+    admin_username: str = "yunmenghai625"
+    admin_password_hash: SecretStr | None = None
+    admin_session_hours: int = Field(default=8, ge=1, le=24)
     default_vehicle_id: UUID = UUID("00000000-0000-0000-0000-000000000001")
     llm_provider: str = "qwen"
     llm_api_key: SecretStr | None = None

@@ -1,13 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LogIn, LogOut, Menu, X } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ModelStatusBadge } from "@/components/layout/model-status-badge";
 import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/api/authApi";
+import {
+  AUTH_CHANGE_EVENT,
+  clearAccessToken,
+  getAccessToken,
+} from "@/lib/api/identity";
 
 export const NAV_ITEMS = [
   { href: "/", label: "AutoMind" },
@@ -23,7 +29,31 @@ const ADMIN_ITEMS = [{ href: "/admin", label: "运营管理" }] as const;
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+
+  React.useEffect(() => {
+    const refreshIdentity = () => {
+      if (!getAccessToken()) {
+        setIsAdmin(false);
+        return;
+      }
+      void getCurrentUser()
+        .then((user) => setIsAdmin(user.role === "admin"))
+        .catch(() => {
+          clearAccessToken();
+          setIsAdmin(false);
+        });
+    };
+    refreshIdentity();
+    window.addEventListener(AUTH_CHANGE_EVENT, refreshIdentity);
+    window.addEventListener("storage", refreshIdentity);
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, refreshIdentity);
+      window.removeEventListener("storage", refreshIdentity);
+    };
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -59,7 +89,7 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            {ADMIN_ITEMS.map((item) => (
+            {isAdmin && ADMIN_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -80,6 +110,27 @@ export function SiteHeader() {
         <div className="flex items-center gap-1.5">
           <ModelStatusBadge />
           <ThemeToggle />
+          {isAdmin ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden text-muted-foreground sm:inline-flex"
+              onClick={() => {
+                clearAccessToken();
+                router.push("/");
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              退出管理
+            </Button>
+          ) : (
+            <Button asChild variant="ghost" size="sm" className="hidden text-muted-foreground sm:inline-flex">
+              <Link href="/admin/login">
+                <LogIn className="h-4 w-4" />
+                管理员登录
+              </Link>
+            </Button>
+          )}
           <Link
             href="https://github.com/yunmenghai625/AutoMind"
             target="_blank"
@@ -113,7 +164,7 @@ export function SiteHeader() {
       {open && (
         <div className="border-t lg:hidden">
           <nav className="container mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3" aria-label="移动端导航">
-            {[...NAV_ITEMS, ...ADMIN_ITEMS].map((item) => (
+            {[...NAV_ITEMS, ...(isAdmin ? ADMIN_ITEMS : [])].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -129,6 +180,27 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            {isAdmin ? (
+              <button
+                type="button"
+                onClick={() => {
+                  clearAccessToken();
+                  setOpen(false);
+                  router.push("/");
+                }}
+                className="rounded-md px-3 py-2 text-left text-sm font-medium text-muted-foreground"
+              >
+                退出管理
+              </button>
+            ) : (
+              <Link
+                href="/admin/login"
+                onClick={() => setOpen(false)}
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground"
+              >
+                管理员登录
+              </Link>
+            )}
           </nav>
         </div>
       )}

@@ -137,6 +137,8 @@ jobs:
         run: |
           curl --fail --retry 12 --retry-delay 5 --retry-all-errors "$BACKEND_BASE_URL/health" \
             | jq --exit-status '.status == "ok"'
+          curl --fail --retry 12 --retry-delay 5 --retry-all-errors "$BACKEND_BASE_URL/api/v1/knowledge/sources" \
+            | jq --exit-status 'length >= 4'
           curl --fail --retry 12 --retry-delay 5 --retry-all-errors "$FRONTEND_BASE_URL/"
         env:
           BACKEND_BASE_URL: ${{ vars.BACKEND_BASE_URL }}

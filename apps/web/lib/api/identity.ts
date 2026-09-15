@@ -1,5 +1,6 @@
 const ACCESS_TOKEN_KEY = "automind-access-token";
 const GUEST_ID_KEY = "automind-guest-id";
+export const AUTH_CHANGE_EVENT = "automind-auth-change";
 
 export function getAccessToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -13,12 +14,14 @@ export function hasAccessToken(): boolean {
 export function setAccessToken(token: string): void {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(ACCESS_TOKEN_KEY, token);
+    window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
   }
 }
 
 export function clearAccessToken(): void {
   if (typeof window !== "undefined") {
     window.localStorage.removeItem(ACCESS_TOKEN_KEY);
+    window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
   }
 }
 

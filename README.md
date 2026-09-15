@@ -82,6 +82,17 @@ npm run dev
 访问 `http://localhost:3000`。开发环境可访问 `http://127.0.0.1:8000/docs`；production 模板
 关闭接口文档。数据库暂不可用时健康检查返回 `degraded`，依赖数据库的接口返回结构化 503。
 
+### 管理员登录
+
+管理员账号默认为 `yunmenghai625`。密码不写入仓库，先在已安装项目依赖的终端中运行：
+
+```powershell
+python -m apps.api.auth.admin_cli
+```
+
+将输出内容保存为部署平台的 Secret `ADMIN_PASSWORD_HASH`；如需修改账号名，同时设置
+`ADMIN_USERNAME`。管理员通过 `/admin/login` 登录，成功后才会显示“运营管理”，会话默认 8 小时。
+
 ## 验证
 
 ```powershell
@@ -97,8 +108,8 @@ npm run typecheck
 npm run build
 ```
 
-当前验收基线：88 个测试通过；Alembic head 为 `20260913_0010`；56 条 RAG gold QA 通过；
-前端生成 11 个静态页面。
+当前验收基线：91 个测试通过；Alembic head 为 `20260913_0010`；56 条 RAG gold QA 通过；
+前端生成 13 个静态页面。
 
 ## Performance
 
@@ -109,7 +120,7 @@ Secret 标记的合成测试流量，不是实际用户量，也不是公网容�
 
 ## Deployment
 
-- `railway.json`：Dockerfile 构建、发布前 Alembic migration 与自主知识卡同步、启动命令与健康检查。
+- `railway.json`：Dockerfile 构建、启动时执行 Alembic migration 与幂等知识卡同步，并配置健康检查。
 - `apps/web/vercel.json`：Vercel Next.js monorepo 配置，并关闭与 Actions 重复的原生 Git 发布。
 - `deploy/*.env.example` 与 `apps/web/.env.*.example`：staging/production 变量清单，不含凭据。
 - `.github/workflows/ci.yml`：常规后端、数据库、RAG、前端和容器验证。

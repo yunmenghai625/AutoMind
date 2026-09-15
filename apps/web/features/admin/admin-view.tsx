@@ -16,6 +16,7 @@ import {
   Waypoints,
 } from "lucide-react";
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/page-header";
 import { MockBadge } from "@/components/common/mock-badge";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +40,8 @@ import {
   getSystemComponents,
 } from "@/lib/api/adminApi";
 import { IS_MOCK } from "@/lib/config";
+import { HttpClientError } from "@/lib/api/apiClient";
+import { clearAccessToken, hasAccessToken } from "@/lib/api/identity";
 import { MultiLines, Sparkline, UsageBars, VerticalBars } from "@/features/admin/charts";
 import type {
   AdminMetrics,
@@ -230,6 +233,7 @@ function SafetyEvents({ events }: { events: AgentSafetyEvent[] }) {
 }
 
 export function AdminView() {
+  const router = useRouter();
   const [overview, setOverview] = React.useState<AdminOverview | null>(null);
   const [metrics, setMetrics] = React.useState<AdminMetrics | null>(null);
   const [runs, setRuns] = React.useState<AgentRun[]>([]);
@@ -241,6 +245,10 @@ export function AdminView() {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    if (!IS_MOCK && !hasAccessToken()) {
+      router.replace("/admin/login");
+      return;
+    }
     void Promise.all([
       getAdminOverview().then(setOverview),
       getAdminMetrics().then(setMetrics),
@@ -249,8 +257,15 @@ export function AdminView() {
       getSafetyEvents().then((events) => {
         if (!IS_MOCK) setSafetyEvents(events);
       }),
-    ]).catch(() => setError("查看运营指标需要有效的管理员会话。"));
-  }, []);
+    ]).catch((cause) => {
+      if (cause instanceof HttpClientError && [401, 403].includes(cause.status)) {
+        clearAccessToken();
+        router.replace("/admin/login");
+        return;
+      }
+      setError("运营指标暂时无法加载，请稍后重试。");
+    });
+  }, [router]);
 
   if (error) {
     return <div className="container mx-auto max-w-7xl px-4 py-6"><PageHeader title="运营管理" /><p className="mt-6 text-sm text-destructive">{error}</p></div>;

@@ -47,6 +47,13 @@ function SourceList() {
       </div>
     );
   }
+  if (sources.length === 0) {
+    return (
+      <p className="py-4 text-sm text-muted-foreground">
+        知识卡正在同步，请稍后刷新页面。
+      </p>
+    );
+  }
   return (
     <ul className="space-y-2 py-1">
       {sources.map((s) => (
@@ -188,7 +195,7 @@ export function KnowledgeView() {
       <PageHeader
         title="汽车知识库"
         badge={IS_MOCK ? <MockBadge /> : undefined}
-        description="基于车辆手册和使用指南的汽车知识 RAG，回答包含引用来源与检索详情。"
+        description="基于公开安全资料自主整理的汽车知识 RAG，回答包含引用来源与检索详情。"
       />
       <div className="mt-6 grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
         <Card className="self-start">
@@ -237,7 +244,7 @@ export function KnowledgeView() {
                 <div className="flex h-full flex-col items-center justify-center gap-2 text-center text-muted-foreground">
                   <Sparkles className="h-8 w-8 text-primary/50" />
                   <p className="text-sm">
-                    可以询问任何车辆问题，回答将以车辆手册为依据。
+                    可以询问车辆安全与使用问题，回答将以已索引知识卡为依据。
                   </p>
                 </div>
               )}

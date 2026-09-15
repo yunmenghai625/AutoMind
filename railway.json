@@ -5,10 +5,7 @@
     "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "preDeployCommand": [
-      "alembic upgrade head && python -m apps.api.rag.ingest_cli data/knowledge"
-    ],
-    "startCommand": "/bin/sh -c \"alembic upgrade head && exec uvicorn apps.api.main:app --host 0.0.0.0 --port $PORT\"",
+    "startCommand": "/bin/sh -c \"alembic upgrade head && python -m apps.api.rag.ingest_cli data/knowledge && exec uvicorn apps.api.main:app --host 0.0.0.0 --port $PORT\"",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 120,
     "restartPolicyType": "ON_FAILURE",

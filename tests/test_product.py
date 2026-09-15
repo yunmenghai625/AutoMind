@@ -4,10 +4,20 @@ from uuid import uuid4
 
 import jwt
 import pytest
+from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from apps.api.aigc.repository import UsageSubject
-from apps.api.auth.service import AuthenticationError, JwtAuthenticator
+from apps.api.auth.service import (
+    AdminAuthenticationError,
+    AuthenticationError,
+    JwtAuthenticator,
+    create_admin_session,
+    hash_admin_password,
+    verify_admin_password,
+)
+from apps.api.core.config import Settings
+from apps.api.main import create_app
 from apps.api.product.schemas import FeedbackRequest, PreferenceValues
 from apps.api.product.service import (
     ExternalVehicleDataService,
@@ -51,6 +61,87 @@ def test_jwt_authenticator_rejects_expired_token() -> None:
     )
     with pytest.raises(AuthenticationError):
         authenticator.authenticate(f"Bearer {token}")
+
+
+def test_admin_password_hash_and_session_are_verified() -> None:
+    password_hash = hash_admin_password(
+        "portfolio-admin-password",
+        salt=b"automind-test-salt",
+    )
+    assert verify_admin_password("portfolio-admin-password", password_hash) is True
+    assert verify_admin_password("incorrect-password", password_hash) is False
+
+    token, expires_at, identity = create_admin_session(
+        submitted_username="YunMengHai625",
+        submitted_password="portfolio-admin-password",
+        configured_username="yunmenghai625",
+        configured_password_hash=password_hash,
+        jwt_secret="phase8-admin-jwt-secret-at-least-32-characters",
+        issuer="automind",
+        audience="authenticated",
+        lifetime_hours=8,
+    )
+    decoded = JwtAuthenticator(
+        secret="phase8-admin-jwt-secret-at-least-32-characters",
+        issuer="automind",
+        audience="authenticated",
+    ).authenticate(f"Bearer {token}")
+    assert expires_at > datetime.now(UTC)
+    assert identity.role == "admin"
+    assert decoded.user_id == identity.user_id
+    assert decoded.role == "admin"
+
+    with pytest.raises(AdminAuthenticationError):
+        create_admin_session(
+            submitted_username="yunmenghai625",
+            submitted_password="incorrect-password",
+            configured_username="yunmenghai625",
+            configured_password_hash=password_hash,
+            jwt_secret="phase8-admin-jwt-secret-at-least-32-characters",
+            issuer="automind",
+            audience="authenticated",
+            lifetime_hours=8,
+        )
+
+
+def test_admin_login_endpoint_issues_a_working_bearer_token() -> None:
+    password_hash = hash_admin_password(
+        "portfolio-admin-password",
+        salt=b"automind-api-test",
+    )
+    settings = Settings(
+        app_env="test",
+        database_healthcheck_enabled=False,
+        rate_limit_enabled=False,
+        operational_metrics_persistence_enabled=False,
+        jwt_secret="phase8-login-jwt-secret-at-least-32-characters",
+        jwt_issuer="automind",
+        jwt_audience="authenticated",
+        admin_username="yunmenghai625",
+        admin_password_hash=password_hash,
+    )
+    with TestClient(create_app(settings)) as test_client:
+        response = test_client.post(
+            "/api/v1/auth/admin/login",
+            json={"username": "yunmenghai625", "password": "portfolio-admin-password"},
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["tokenType"] == "Bearer"
+        assert payload["user"]["role"] == "admin"
+
+        me = test_client.get(
+            "/api/v1/auth/me",
+            headers={"Authorization": f"Bearer {payload['accessToken']}"},
+        )
+        assert me.status_code == 200
+        assert me.json()["role"] == "admin"
+
+        rejected = test_client.post(
+            "/api/v1/auth/admin/login",
+            json={"username": "yunmenghai625", "password": "incorrect-password"},
+        )
+        assert rejected.status_code == 401
 
 
 def test_structured_preferences_and_feedback_reject_invalid_values() -> None:
