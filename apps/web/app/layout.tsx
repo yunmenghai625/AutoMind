@@ -27,7 +27,8 @@ export const metadata: Metadata = {
     "RAG",
     "LLMOps",
   ],
-  authors: [{ name: "AutoMind" }],
+  authors: [{ name: "yunmenghai625" }],
+  creator: "yunmenghai625",
   openGraph: {
     type: "website",
     title: "AutoMind — 生产级汽车智能座舱平台",

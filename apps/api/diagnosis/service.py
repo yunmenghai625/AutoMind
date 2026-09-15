@@ -222,9 +222,12 @@ class DiagnosisService:
             for item, risk in zip(detections, risks, strict=True)
         ]
         if low_confidence:
-            message = "无法可靠识别该仪表指示。请重新拍摄清晰近照，或提供 OBD 故障码。"
+            message = (
+                "无法可靠识别该仪表指示。请重新拍摄清晰近照，或提供 OBD 故障码。"
+                "本结果仅供演示参考，不能替代专业维修检查。"
+            )
         else:
-            message = f"识别到可能的{primary.label}。该结果仅用于信息参考，不能替代专业维修检查。"
+            message = f"识别到可能的{primary.label}。本结果仅供演示参考，不能替代专业维修检查。"
         evidence_text = "；".join(primary.visible_evidence)
         causes = [
             DiagnosisCause(

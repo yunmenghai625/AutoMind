@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { APP_NAME, APP_TAGLINE } from "@/lib/config";
+import { APP_NAME } from "@/lib/config";
 
 export function SiteFooter() {
   return (
@@ -10,12 +10,15 @@ export function SiteFooter() {
             AM
           </span>
           <span>
-            {APP_NAME} · {APP_TAGLINE}
+            {APP_NAME} · 个人作品集演示
           </span>
         </div>
         <div className="flex items-center gap-4">
           <Link href="/status" className="hover:text-foreground">
             系统状态
+          </Link>
+          <Link href="/legal" className="hover:text-foreground">
+            项目声明
           </Link>
           <Link
             href="https://github.com/yunmenghai625/AutoMind"
@@ -25,7 +28,7 @@ export function SiteFooter() {
           >
             GitHub
           </Link>
-          <span>© {new Date().getFullYear()} AutoMind</span>
+          <span>© 2026 yunmenghai625</span>
         </div>
       </div>
     </footer>

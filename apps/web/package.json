@@ -1,7 +1,8 @@
 {
   "name": "automind",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
+  "author": "yunmenghai625",
   "description": "AutoMind - Production Automotive AI Cockpit Platform (Frontend)",
   "scripts": {
     "dev": "next dev",

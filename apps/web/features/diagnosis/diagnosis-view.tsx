@@ -141,6 +141,11 @@ export function DiagnosisView() {
                 aria-label="选择仪表图片文件"
               />
 
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                请勿上传包含人脸、车牌、证件或其他个人信息的图片。本结果仅供演示参考，
+                不能替代专业维修检查。
+              </p>
+
               {preview && (
                 <Button
                   onClick={() => void analyze()}

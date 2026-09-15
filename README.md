@@ -1,16 +1,27 @@
-# AutoMind 1.0.0
+# AutoMind 1.0.1
 
 AutoMind 是面向公网运行的汽车 AI Agent 产品：Next.js 驾驶舱连接 FastAPI、PostgreSQL/
 pgvector 与 Redis，提供车辆数字孪生、自然语言座舱控制、带引用的汽车知识 RAG、AI 主题、
 仪表图片诊断、用户偏好与车辆档案，以及真实运营审计。
 
-当前状态：**Phase 7 仓库内开发和本地 production 验收完成，等待真实云平台发布。**
+当前状态：**个人独立开发的非商业作品集演示，已完成 production 发布与云端验收。**
 
 ## Live Demo
 
-尚未发布公开地址。当前工作目录未连接 Git 远端，也没有 Railway/Vercel 凭据；项目不会用示例
-域名冒充 Live Demo。完成 `docs/phase-7-deployment.md` 的外部配置和 staging 验收后，再在此处
-写入真实 HTTPS 前端与 API 地址。
+- Frontend: <https://auto-mind-eight.vercel.app/>
+- API health: <https://automind-api-production.up.railway.app/health>
+
+请勿在演示环境上传人脸、车牌、证件、真实 VIN 或其他个人信息。
+
+## 项目归属与使用边界
+
+Copyright © 2026 yunmenghai625。AutoMind 是个人独立开发的非商业作品集演示项目，用于技术
+展示与面试交流，与任何同名企业、汽车制造商或第三方品牌不存在隶属、授权或合作关系。
+
+项目中的原创源代码、文档及界面编排保留全部权利；开源组件、第三方服务、模型及数据分别受
+其各自许可证和服务条款约束。部分功能由 AI 模型辅助，生成及车辆诊断结果仅供演示参考，不能
+替代专业维修检查。详细边界见 [NOTICE](NOTICE)、[数据来源说明](DATA_SOURCES.md) 和
+[第三方许可说明](THIRD_PARTY_NOTICES.md)。
 
 ## 核心能力
 
