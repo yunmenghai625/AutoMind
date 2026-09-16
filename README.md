@@ -8,7 +8,7 @@ pgvector 与 Redis，提供车辆数字孪生、自然语言座舱控制、带�
 
 ## Live Demo
 
-- Frontend: <https://auto-mind-eight.vercel.app/>
+- Frontend: <https://automind-staging.vercel.app/>
 - API health: <https://automind-api-production.up.railway.app/health>
 
 请勿在演示环境上传人脸、车牌、证件、真实 VIN 或其他个人信息。
