@@ -21,6 +21,12 @@ class UsageSubject:
     kind: str
     key: str
     user_id: UUID | None = None
+    role: str = "guest"
+
+    @property
+    def vehicle_user_id(self) -> UUID | None:
+        """Admins operate the isolated demo vehicle, never another user's vehicle."""
+        return None if self.role == "admin" else self.user_id
 
 
 @dataclass(frozen=True, slots=True)

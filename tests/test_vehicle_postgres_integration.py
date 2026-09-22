@@ -295,6 +295,9 @@ def test_postgres_aigc_preview_cache_apply_and_metrics(tmp_path) -> None:
             rag_max_retries=0,
         )
     )
+    app.dependency_overrides[get_admin_identity] = lambda: AuthIdentity(
+        kind="registered", user_id=uuid4(), role="admin"
+    )
     headers = {"X-Guest-ID": guest_id}
     try:
         with TestClient(app) as client:

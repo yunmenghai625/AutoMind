@@ -3,6 +3,7 @@ from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
+from pydantic import BaseModel
 
 from apps.api.api.dependencies import (
     get_admin_identity,
@@ -18,6 +19,34 @@ from apps.api.operations.repository import OperationalRepository
 from apps.api.operations.service import AdminMetricsService, BudgetGuard
 
 router = APIRouter(dependencies=[Depends(get_admin_identity)])
+
+
+class AiControlUpdate(BaseModel):
+    enabled: bool
+
+
+def _ai_control_state(request: Request, runtime_enabled: bool) -> dict[str, Any]:
+    settings = request.app.state.settings
+    return {
+        "enabled": settings.ai_enabled and runtime_enabled,
+        "runtimeEnabled": runtime_enabled,
+        "configEnabled": settings.ai_enabled,
+        "backend": request.app.state.ai_admission.backend,
+        "rateLimitPerMinute": settings.ai_rate_limit_per_minute,
+        "maxConcurrency": settings.ai_max_concurrency,
+    }
+
+
+@router.get("/ai-control")
+async def get_ai_control(request: Request) -> dict[str, Any]:
+    enabled = await request.app.state.ai_admission.is_enabled()
+    return _ai_control_state(request, enabled)
+
+
+@router.put("/ai-control")
+async def update_ai_control(payload: AiControlUpdate, request: Request) -> dict[str, Any]:
+    enabled = await request.app.state.ai_admission.set_enabled(payload.enabled)
+    return _ai_control_state(request, enabled)
 
 
 @router.get("/overview")

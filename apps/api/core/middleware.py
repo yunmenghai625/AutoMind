@@ -113,7 +113,12 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         settings = request.app.state.settings
         if not settings.rate_limit_enabled or request.url.path.endswith("/health"):
             return None
-        limiter = request.app.state.rate_limiter
+        login_path = f"{settings.api_v1_prefix}/auth/admin/login"
+        limiter = (
+            request.app.state.admin_login_limiter
+            if request.url.path == login_path
+            else request.app.state.rate_limiter
+        )
         identity = (
             request.headers.get("Authorization")
             or request.headers.get("X-Guest-ID")

@@ -10,6 +10,15 @@ import type {
   SystemComponent,
 } from "@/types/agent";
 
+export interface AiControlState {
+  enabled: boolean;
+  runtimeEnabled: boolean;
+  configEnabled: boolean;
+  backend: "redis" | "memory" | "memory-fallback";
+  rateLimitPerMinute: number;
+  maxConcurrency: number;
+}
+
 /**
  * Admin services.
  * Live mode uses the administrator-protected production metrics and trace APIs.
@@ -67,4 +76,38 @@ export async function getSafetyEvents(): Promise<AgentSafetyEvent[]> {
     });
   }
   return simulate(() => []);
+}
+
+export async function getAiControl(): Promise<AiControlState> {
+  if (API_MODE === "live") {
+    return http<AiControlState>("/api/v1/admin/ai-control", {
+      headers: authHeaders(),
+    });
+  }
+  return simulate(() => ({
+    enabled: true,
+    runtimeEnabled: true,
+    configEnabled: true,
+    backend: "memory",
+    rateLimitPerMinute: 10,
+    maxConcurrency: 4,
+  }));
+}
+
+export async function setAiControl(enabled: boolean): Promise<AiControlState> {
+  if (API_MODE === "live") {
+    return http<AiControlState>("/api/v1/admin/ai-control", {
+      method: "PUT",
+      headers: authHeaders(),
+      body: { enabled },
+    });
+  }
+  return simulate(() => ({
+    enabled,
+    runtimeEnabled: enabled,
+    configEnabled: true,
+    backend: "memory",
+    rateLimitPerMinute: 10,
+    maxConcurrency: 4,
+  }));
 }

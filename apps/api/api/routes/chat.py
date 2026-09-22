@@ -9,6 +9,7 @@ from fastapi.responses import StreamingResponse
 from apps.api.agents.service import AgentResult, CockpitAgentService
 from apps.api.aigc.repository import UsageSubject
 from apps.api.api.dependencies import (
+    enforce_ai_admission,
     get_cockpit_agent_service,
     get_garage_service,
     get_usage_quota_service,
@@ -37,6 +38,7 @@ router = APIRouter()
 async def send_chat(
     payload: SendChatRequest,
     request: Request,
+    _admission: Annotated[None, Depends(enforce_ai_admission)],
     service: Annotated[CockpitAgentService, Depends(get_cockpit_agent_service)],
     subject: Annotated[UsageSubject, Depends(get_usage_subject)],
     quota: Annotated[UsageQuotaService, Depends(get_usage_quota_service)],
@@ -51,6 +53,7 @@ async def send_chat(
 @router.get("/stream")
 async def stream_chat(
     request: Request,
+    _admission: Annotated[None, Depends(enforce_ai_admission)],
     service: Annotated[CockpitAgentService, Depends(get_cockpit_agent_service)],
     subject: Annotated[UsageSubject, Depends(get_usage_subject)],
     quota: Annotated[UsageQuotaService, Depends(get_usage_quota_service)],
@@ -120,7 +123,7 @@ async def _run(
 async def _resolve_vehicle(request: Request, subject: UsageSubject, garage: GarageService) -> UUID:
     try:
         return await garage.resolve_vehicle_id(
-            user_id=subject.user_id,
+            user_id=subject.vehicle_user_id,
             requested_vehicle_id=None,
             demo_vehicle_id=request.app.state.settings.default_vehicle_id,
         )

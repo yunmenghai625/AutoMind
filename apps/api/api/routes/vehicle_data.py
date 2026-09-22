@@ -50,10 +50,10 @@ async def get_recalls(
         resolved = vehicle_id
         if resolved is None:
             primary = await garage.primary(
-                user_id=subject.user_id,
+                user_id=subject.vehicle_user_id,
                 demo_vehicle_id=request.app.state.settings.default_vehicle_id,
             )
             resolved = primary.id
-        return await service.recalls(vehicle_id=resolved, user_id=subject.user_id)
+        return await service.recalls(vehicle_id=resolved, user_id=subject.vehicle_user_id)
     except ProductNotFoundError as exc:
         raise AppError("VEHICLE_NOT_FOUND", "Vehicle was not found", status_code=404) from exc

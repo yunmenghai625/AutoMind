@@ -108,7 +108,7 @@ npm run typecheck
 npm run build
 ```
 
-当前验收基线：91 个测试通过；Alembic head 为 `20260913_0010`；56 条 RAG gold QA 通过；
+当前验收基线：98 个测试通过；Alembic head 为 `20260913_0010`；56 条 RAG gold QA 通过；
 前端生成 13 个静态页面。
 
 ## Performance
@@ -137,7 +137,10 @@ Secret 标记的合成测试流量，不是实际用户量，也不是公网容�
 定位。production 必须使用明确 HTTPS `CORS_ORIGINS`、独立高熵 Secrets、私网数据库/Redis、
 私有对象存储与最小权限管理账号。
 
-Rate Limit、Safety、Quota、Budget Guard 与 request timeout 不得为上线或压测关闭。合法压测
+Rate Limit、Safety、Quota、Budget Guard 与 request timeout 不得为上线或压测关闭。AI 请求还受
+`AI_ENABLED` 总开关、`AI_RATE_LIMIT_PER_MINUTE` 单调用方限流和 `AI_MAX_CONCURRENCY` 跨实例
+并发闸门保护；production 必须保持 Redis 可用，Redis 故障时只保留单实例内存保护。
+合法压测
 必须同时提供 `X-AutoMind-Traffic-Class: load_test` 和正确 `X-Load-Test-Token`；错误令牌仍按
 用户流量处理。告警、故障处置和恢复步骤见 `docs/phase-7-runbook.md`。
 

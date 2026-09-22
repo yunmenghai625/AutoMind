@@ -14,6 +14,7 @@ class RateLimitDecision:
 
 
 class RedisRateLimiter:
+    _MAX_FALLBACK_KEYS = 10_000
     _SCRIPT = """
 local current = redis.call('INCR', KEYS[1])
 if current == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end
@@ -63,6 +64,12 @@ return {current, ttl}
     async def _memory_allow(self, key: str) -> RateLimitDecision:
         now = monotonic()
         async with self._lock:
+            if key not in self._fallback and len(self._fallback) >= self._MAX_FALLBACK_KEYS:
+                self._fallback = {
+                    item_key: item for item_key, item in self._fallback.items() if item[1] > now
+                }
+                if len(self._fallback) >= self._MAX_FALLBACK_KEYS:
+                    key = "overflow"
             count, expires = self._fallback.get(key, (0, now + 60))
             if now >= expires:
                 count, expires = 0, now + 60

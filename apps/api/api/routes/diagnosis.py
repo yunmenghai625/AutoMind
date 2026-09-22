@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse
 
 from apps.api.aigc.repository import UsageSubject
 from apps.api.api.dependencies import (
+    enforce_ai_admission,
     get_budget_guard,
     get_diagnosis_service,
     get_garage_service,
@@ -29,6 +30,7 @@ router = APIRouter()
 async def diagnose_image(
     request: Request,
     file: Annotated[UploadFile, File(description="Dashboard or warning-light image")],
+    _admission: Annotated[None, Depends(enforce_ai_admission)],
     subject: Annotated[UsageSubject, Depends(get_usage_subject)],
     service: Annotated[DiagnosisService, Depends(get_diagnosis_service)],
     garage: Annotated[GarageService, Depends(get_garage_service)],
@@ -39,7 +41,7 @@ async def diagnose_image(
     content = await file.read(max_bytes + 1)
     try:
         vehicle_id = await garage.resolve_vehicle_id(
-            user_id=subject.user_id,
+            user_id=subject.vehicle_user_id,
             requested_vehicle_id=None,
             demo_vehicle_id=request.app.state.settings.default_vehicle_id,
         )

@@ -31,7 +31,7 @@ async def get_primary_vehicle(
 ) -> GarageVehicleView:
     try:
         return await service.primary(
-            user_id=subject.user_id,
+            user_id=subject.vehicle_user_id,
             demo_vehicle_id=request.app.state.settings.default_vehicle_id,
         )
     except ProductNotFoundError as exc:

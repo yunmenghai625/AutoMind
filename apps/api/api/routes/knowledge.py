@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request
 
 from apps.api.api.dependencies import (
+    enforce_ai_admission,
     get_admin_identity,
     get_document_ingestion_service,
     get_knowledge_repository,
@@ -54,6 +55,7 @@ async def list_knowledge_sources(
 @router.post("/documents/ingest", response_model=IngestDocumentResponse)
 async def ingest_document(
     payload: IngestDocumentRequest,
+    _admission: Annotated[None, Depends(enforce_ai_admission)],
     service: Annotated[DocumentIngestionService, Depends(get_document_ingestion_service)],
     _admin: Annotated[AuthIdentity, Depends(get_admin_identity)],
 ) -> IngestDocumentResponse:
@@ -83,6 +85,7 @@ async def ingest_document(
 async def query_knowledge(
     payload: KnowledgeQueryRequest,
     request: Request,
+    _admission: Annotated[None, Depends(enforce_ai_admission)],
     service: Annotated[KnowledgeService, Depends(get_knowledge_service)],
 ) -> KnowledgeAnswer:
     try:

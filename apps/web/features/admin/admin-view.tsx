@@ -34,10 +34,13 @@ import { cn } from "@/lib/utils";
 import {
   getAdminMetrics,
   getAdminOverview,
+  getAiControl,
   getAgentRuns,
   getAgentRunDetailById,
   getSafetyEvents,
   getSystemComponents,
+  setAiControl,
+  type AiControlState,
 } from "@/lib/api/adminApi";
 import { IS_MOCK } from "@/lib/config";
 import { HttpClientError } from "@/lib/api/apiClient";
@@ -239,6 +242,8 @@ export function AdminView() {
   const [runs, setRuns] = React.useState<AgentRun[]>([]);
   const [detail, setDetail] = React.useState<AgentRunDetail | null>(null);
   const [components, setComponents] = React.useState<SystemComponent[]>([]);
+  const [aiControl, setAiControlState] = React.useState<AiControlState | null>(null);
+  const [aiControlSaving, setAiControlSaving] = React.useState(false);
   const [safetyEvents, setSafetyEvents] = React.useState<AgentSafetyEvent[]>(
     IS_MOCK ? MOCK_SAFETY_EVENTS : [],
   );
@@ -251,6 +256,7 @@ export function AdminView() {
     }
     void Promise.all([
       getAdminOverview().then(setOverview),
+      getAiControl().then(setAiControlState),
       getAdminMetrics().then(setMetrics),
       getAgentRuns().then(setRuns),
       getSystemComponents().then(setComponents),
@@ -300,6 +306,41 @@ export function AdminView() {
         badge={IS_MOCK ? <MockBadge /> : undefined}
         description={`平台可观测性——智能体成功率、延迟、工具调用与成本。更新时间：${new Date(overview.generatedAt).toLocaleTimeString("zh-CN")}`}
       />
+
+      {aiControl && (
+        <Card className="mt-6">
+          <CardContent className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <Bot className="h-4 w-4 text-primary" />
+                <p className="text-sm font-semibold">AI 服务总开关</p>
+                <Badge variant={aiControl.enabled ? "success" : "destructive"}>
+                  {aiControl.enabled ? "运行中" : "已暂停"}
+                </Badge>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                每调用方 {aiControl.rateLimitPerMinute} 次/分钟 · 全局最多 {aiControl.maxConcurrency} 个并发 · {aiControl.backend}
+              </p>
+              {!aiControl.configEnabled && (
+                <p className="mt-1 text-xs text-warning">部署配置已关闭 AI，需修改 AI_ENABLED 后才能重新启用。</p>
+              )}
+            </div>
+            <Button
+              variant={aiControl.enabled ? "destructive" : "default"}
+              disabled={aiControlSaving || (!aiControl.configEnabled && !aiControl.enabled)}
+              onClick={() => {
+                setAiControlSaving(true);
+                void setAiControl(!aiControl.runtimeEnabled)
+                  .then(setAiControlState)
+                  .catch(() => setError("AI 服务开关更新失败，请检查 Redis 状态。"))
+                  .finally(() => setAiControlSaving(false));
+              }}
+            >
+              {aiControlSaving ? "正在更新…" : aiControl.enabled ? "暂停 AI 服务" : "启用 AI 服务"}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
         <OverviewCard icon={<Users className="h-4 w-4" />} label="用户数" value={String(overview.users)} />

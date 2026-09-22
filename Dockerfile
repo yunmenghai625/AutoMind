@@ -13,7 +13,8 @@ COPY data/knowledge ./data/knowledge
 COPY alembic.ini ./
 COPY migrations ./migrations
 
-RUN pip install --no-cache-dir . \
+RUN python -m pip install --no-cache-dir --upgrade "pip>=26.2" \
+    && pip install --no-cache-dir . \
     && addgroup --system automind \
     && adduser --system --ingroup automind automind \
     && mkdir -p /app/data/generated \

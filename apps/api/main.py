@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from apps.api.api.router import api_router
 from apps.api.api.routes import health
+from apps.api.core.ai_admission import AiAdmissionController
 from apps.api.core.config import Settings, get_settings
 from apps.api.core.errors import install_exception_handlers
 from apps.api.core.logging import configure_logging
@@ -28,11 +29,31 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         limit=resolved_settings.rate_limit_per_minute,
         timeout_seconds=resolved_settings.redis_timeout_seconds,
     )
+    admin_login_limiter = RedisRateLimiter(
+        url=redis_url,
+        limit=resolved_settings.admin_login_rate_limit_per_minute,
+        timeout_seconds=resolved_settings.redis_timeout_seconds,
+    )
+    ai_rate_limiter = RedisRateLimiter(
+        url=redis_url,
+        limit=resolved_settings.ai_rate_limit_per_minute,
+        timeout_seconds=resolved_settings.redis_timeout_seconds,
+    )
+    ai_admission = AiAdmissionController(
+        url=redis_url,
+        limit=resolved_settings.ai_max_concurrency,
+        lease_seconds=resolved_settings.ai_lease_seconds,
+        timeout_seconds=resolved_settings.redis_timeout_seconds,
+        fail_closed=resolved_settings.app_env in {"staging", "production"},
+    )
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         yield
         await rate_limiter.close()
+        await admin_login_limiter.close()
+        await ai_rate_limiter.close()
+        await ai_admission.close()
         await close_database()
 
     application = FastAPI(
@@ -44,6 +65,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     application.state.settings = resolved_settings
     application.state.rate_limiter = rate_limiter
+    application.state.admin_login_limiter = admin_login_limiter
+    application.state.ai_rate_limiter = ai_rate_limiter
+    application.state.ai_admission = ai_admission
     application.add_middleware(RequestContextMiddleware)
 
     if resolved_settings.cors_origin_list:

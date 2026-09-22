@@ -68,6 +68,7 @@ def test_product_secrets_are_required_in_production() -> None:
         app_env="production",
         jwt_secret="production-jwt-secret-with-32-bytes",
         vin_hash_secret="production-vin-secret-with-32-bytes",
+        admin_password_hash="pbkdf2_sha256$600000$test$test",
         redis_url="redis://redis:6379/0",
         cors_origins="https://app.example.com",
     )
@@ -80,4 +81,15 @@ def test_product_secrets_are_required_in_production() -> None:
             vin_hash_secret="also-too-short",
             redis_url="redis://redis:6379/0",
             cors_origins="https://app.example.com",
+        )
+
+    with pytest.raises(ValidationError):
+        Settings(
+            app_env="production",
+            jwt_secret="production-jwt-secret-with-32-bytes",
+            vin_hash_secret="production-vin-secret-with-32-bytes",
+            admin_password_hash="pbkdf2_sha256$600000$test$test",
+            redis_url="redis://redis:6379/0",
+            cors_origins="https://app.example.com",
+            rate_limit_enabled=False,
         )

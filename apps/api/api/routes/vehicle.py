@@ -46,7 +46,7 @@ async def get_vehicle_state(
 ) -> VehicleStateResponse:
     try:
         resolved_vehicle_id = await garage.resolve_vehicle_id(
-            user_id=subject.user_id,
+            user_id=subject.vehicle_user_id,
             requested_vehicle_id=vehicle_id,
             demo_vehicle_id=request.app.state.settings.default_vehicle_id,
         )
@@ -81,7 +81,7 @@ async def control_vehicle(
 ) -> VehicleControlResponse:
     try:
         vehicle_id = await garage.resolve_vehicle_id(
-            user_id=subject.user_id,
+            user_id=subject.vehicle_user_id,
             requested_vehicle_id=payload.vehicle_id,
             demo_vehicle_id=request.app.state.settings.default_vehicle_id,
         )

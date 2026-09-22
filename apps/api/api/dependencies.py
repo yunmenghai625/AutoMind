@@ -14,6 +14,7 @@ from apps.api.aigc.service import ThemeApplyService, ThemeGenerationService
 from apps.api.aigc.storage import LocalThemeAssetStore, S3ThemeAssetStore
 from apps.api.aigc.theme_generator import LocalThemeGenerator, OpenAICompatibleThemeGenerator
 from apps.api.auth.service import AuthenticationError, AuthIdentity, JwtAuthenticator
+from apps.api.core.ai_admission import AiCapacityExceededError
 from apps.api.core.errors import AppError
 from apps.api.diagnosis.image_guard import ImageGuard
 from apps.api.diagnosis.providers.local_provider import LocalHeuristicVlmProvider
@@ -219,13 +220,48 @@ async def get_usage_subject(
             kind="registered",
             key=f"user:{identity.user_id}",
             user_id=identity.user_id,
+            role=identity.role,
         )
     guest_hint = request.headers.get("X-Guest-ID")
     if not guest_hint:
         client_host = request.client.host if request.client else "unknown"
         guest_hint = f"{client_host}|{request.headers.get('User-Agent', '')}"
     digest = hashlib.sha256(guest_hint.encode()).hexdigest()
-    return UsageSubject(kind="guest", key=f"guest:{digest}")
+    return UsageSubject(kind="guest", key=f"guest:{digest}", role="guest")
+
+
+async def enforce_ai_admission(
+    request: Request,
+    subject: Annotated[UsageSubject, Depends(get_usage_subject)],
+) -> AsyncIterator[None]:
+    """Kill switch, per-caller throttle, and global concurrency guard for costly AI work."""
+    settings = request.app.state.settings
+    if not settings.ai_enabled or not await request.app.state.ai_admission.is_enabled():
+        raise AppError("AI_DISABLED", "AI 服务已由管理员暂停", status_code=503)
+
+    client_host = request.client.host if request.client else "unknown"
+    rate_key = subject.key if subject.user_id is not None else f"guest-ip:{client_host}"
+    decision = await request.app.state.ai_rate_limiter.allow(rate_key)
+    if not decision.allowed:
+        raise AppError(
+            "AI_RATE_LIMIT_EXCEEDED",
+            "AI 请求过于频繁，请稍后再试",
+            status_code=429,
+            details={"retry_after_seconds": decision.retry_after_seconds},
+        )
+
+    try:
+        lease = await request.app.state.ai_admission.acquire()
+    except AiCapacityExceededError as exc:
+        raise AppError(
+            "AI_CAPACITY_EXCEEDED",
+            "AI 服务繁忙，请稍后再试",
+            status_code=503,
+        ) from exc
+    try:
+        yield
+    finally:
+        await request.app.state.ai_admission.release(lease)
 
 
 def get_theme_generation_service(

@@ -8,17 +8,25 @@ from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from apps.api.aigc.repository import UsageSubject
+from apps.api.api.dependencies import (
+    get_admin_identity,
+    get_garage_service,
+    get_usage_subject,
+    get_vehicle_service,
+)
 from apps.api.auth.service import (
     AdminAuthenticationError,
     AuthenticationError,
+    AuthIdentity,
     JwtAuthenticator,
     create_admin_session,
     hash_admin_password,
     verify_admin_password,
 )
 from apps.api.core.config import Settings
+from apps.api.domain.vehicle.service import VehicleService
 from apps.api.main import create_app
-from apps.api.product.schemas import FeedbackRequest, PreferenceValues
+from apps.api.product.schemas import FeedbackRequest, GarageVehicleView, PreferenceValues
 from apps.api.product.service import (
     ExternalVehicleDataService,
     UsageQuotaExceededError,
@@ -26,6 +34,7 @@ from apps.api.product.service import (
     normalize_vin,
 )
 from apps.api.product.vehicle_data import VehicleDataProviderError
+from tests.fakes import DEMO_VEHICLE_ID, InMemoryVehicleHAL
 
 
 def test_jwt_authenticator_accepts_registered_and_guest_identities() -> None:
@@ -102,6 +111,111 @@ def test_admin_password_hash_and_session_are_verified() -> None:
             audience="authenticated",
             lifetime_hours=8,
         )
+
+
+def test_admin_uses_only_the_demo_vehicle_context() -> None:
+    admin_id = uuid4()
+    admin = UsageSubject(
+        kind="registered",
+        key=f"user:{admin_id}",
+        user_id=admin_id,
+        role="admin",
+    )
+    regular = UsageSubject(
+        kind="registered",
+        key=f"user:{admin_id}",
+        user_id=admin_id,
+        role="authenticated",
+    )
+
+    assert admin.vehicle_user_id is None
+    assert regular.vehicle_user_id == admin_id
+
+
+def test_admin_can_open_garage_and_cockpit_without_accessing_user_vehicles() -> None:
+    admin_id = uuid4()
+    subject = UsageSubject(
+        kind="registered",
+        key=f"user:{admin_id}",
+        user_id=admin_id,
+        role="admin",
+    )
+    captured_user_ids: list[object] = []
+
+    class AdminDemoGarage:
+        async def primary(self, *, user_id, demo_vehicle_id):
+            captured_user_ids.append(user_id)
+            assert demo_vehicle_id == DEMO_VEHICLE_ID
+            return GarageVehicleView(
+                id=DEMO_VEHICLE_ID,
+                make="AutoMind",
+                model="Demo",
+                year=2026,
+                powertrain="BEV",
+                mileageKm=0,
+                vinMasked=None,
+                batterySoc=78,
+                updatedAt=datetime.now(UTC),
+                name="AutoMind Demo",
+                vin="Not provided",
+                lastCheck="2026-09-22",
+                batteryHealth=None,
+                trim="BEV",
+                color="Not specified",
+            )
+
+        async def resolve_vehicle_id(self, *, user_id, requested_vehicle_id, demo_vehicle_id):
+            captured_user_ids.append(user_id)
+            assert requested_vehicle_id is None
+            return demo_vehicle_id
+
+    settings = Settings(
+        app_env="test",
+        database_healthcheck_enabled=False,
+        rate_limit_enabled=False,
+        operational_metrics_persistence_enabled=False,
+    )
+    app = create_app(settings)
+    vehicle_service = VehicleService(InMemoryVehicleHAL())
+    app.dependency_overrides[get_usage_subject] = lambda: subject
+    app.dependency_overrides[get_garage_service] = lambda: AdminDemoGarage()
+    app.dependency_overrides[get_vehicle_service] = lambda: vehicle_service
+
+    with TestClient(app) as test_client:
+        garage = test_client.get("/api/v1/garage/vehicle")
+        cockpit = test_client.get("/api/v1/vehicle/state")
+
+    assert garage.status_code == 200
+    assert cockpit.status_code == 200
+    assert captured_user_ids == [None, None]
+
+
+def test_admin_can_control_ai_runtime_and_public_metrics_are_protected() -> None:
+    settings = Settings(
+        app_env="test",
+        database_healthcheck_enabled=False,
+        rate_limit_enabled=False,
+        operational_metrics_persistence_enabled=False,
+    )
+    app = create_app(settings)
+
+    with TestClient(app) as anonymous_client:
+        metrics = anonymous_client.get("/api/v1/aigc/metrics")
+    assert metrics.status_code == 401
+
+    admin_id = uuid4()
+    app.dependency_overrides[get_admin_identity] = lambda: AuthIdentity(
+        kind="registered",
+        user_id=admin_id,
+        role="admin",
+    )
+    with TestClient(app) as admin_client:
+        stopped = admin_client.put("/api/v1/admin/ai-control", json={"enabled": False})
+        state = admin_client.get("/api/v1/admin/ai-control")
+
+    assert stopped.status_code == 200
+    assert stopped.json()["enabled"] is False
+    assert state.json()["runtimeEnabled"] is False
 
 
 def test_admin_login_endpoint_issues_a_working_bearer_token() -> None:

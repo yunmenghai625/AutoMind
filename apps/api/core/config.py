@@ -117,6 +117,11 @@ class Settings(BaseSettings):
     request_timeout_seconds: float = Field(default=30, gt=0, le=120)
     rate_limit_enabled: bool = True
     rate_limit_per_minute: int = Field(default=120, ge=1, le=10000)
+    admin_login_rate_limit_per_minute: int = Field(default=5, ge=1, le=60)
+    ai_enabled: bool = True
+    ai_rate_limit_per_minute: int = Field(default=10, ge=1, le=1000)
+    ai_max_concurrency: int = Field(default=4, ge=1, le=100)
+    ai_lease_seconds: int = Field(default=120, ge=10, le=600)
     redis_url: SecretStr | None = None
     redis_timeout_seconds: float = Field(default=0.5, gt=0, le=5)
     otel_enabled: bool = False
@@ -174,6 +179,15 @@ class Settings(BaseSettings):
             raise ValueError("JWT_SECRET must contain at least 32 characters in production")
         if not self.vin_hash_secret or len(self.vin_hash_secret.get_secret_value()) < 32:
             raise ValueError("VIN_HASH_SECRET must contain at least 32 characters in production")
+        if (
+            not self.admin_password_hash
+            or not self.admin_password_hash.get_secret_value().startswith("pbkdf2_sha256$")
+        ):
+            raise ValueError("ADMIN_PASSWORD_HASH must be configured in production")
+        if not self.rate_limit_enabled:
+            raise ValueError("RATE_LIMIT_ENABLED cannot be disabled in production")
+        if not self.usage_quota_enabled:
+            raise ValueError("USAGE_QUOTA_ENABLED cannot be disabled in production")
         if self.rate_limit_enabled and (
             not self.redis_url or not self.redis_url.get_secret_value()
         ):

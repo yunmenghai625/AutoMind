@@ -5,6 +5,7 @@ import logging
 import pytest
 from fastapi.testclient import TestClient
 
+from apps.api.core.ai_admission import AiAdmissionController, AiCapacityExceededError
 from apps.api.core.config import Settings
 from apps.api.core.logging import JsonFormatter
 from apps.api.core.rate_limit import RedisRateLimiter
@@ -33,6 +34,67 @@ async def test_memory_rate_limiter_enforces_fixed_window() -> None:
     assert second.remaining == 0
     assert rejected.allowed is False
     assert rejected.retry_after_seconds > 0
+
+
+@pytest.mark.asyncio
+async def test_ai_admission_rejects_excess_concurrency_and_recovers() -> None:
+    admission = AiAdmissionController(
+        url="",
+        limit=1,
+        lease_seconds=30,
+        timeout_seconds=0.1,
+    )
+
+    first = await admission.acquire()
+    with pytest.raises(AiCapacityExceededError):
+        await admission.acquire()
+
+    await admission.release(first)
+    second = await admission.acquire()
+    await admission.release(second)
+
+    assert await admission.is_enabled() is True
+    assert await admission.set_enabled(False) is False
+    assert await admission.is_enabled() is False
+
+
+def test_ai_kill_switch_fails_closed_before_model_execution() -> None:
+    app = create_app(
+        Settings(
+            app_env="test",
+            database_healthcheck_enabled=False,
+            ai_enabled=False,
+            rate_limit_enabled=False,
+            operational_metrics_persistence_enabled=False,
+        )
+    )
+
+    with TestClient(app) as client:
+        response = client.post("/api/v1/chat", json={"message": "打开空调"})
+
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "AI_DISABLED"
+
+
+def test_ai_kill_switch_also_covers_direct_knowledge_queries() -> None:
+    app = create_app(
+        Settings(
+            app_env="test",
+            database_healthcheck_enabled=False,
+            ai_enabled=False,
+            rate_limit_enabled=False,
+            operational_metrics_persistence_enabled=False,
+        )
+    )
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/v1/knowledge/query",
+            json={"query": "胎压报警怎么办"},
+        )
+
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "AI_DISABLED"
 
 
 @pytest.mark.asyncio

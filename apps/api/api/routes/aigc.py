@@ -25,6 +25,8 @@ from apps.api.aigc.storage import (
 )
 from apps.api.aigc.theme_generator import InvalidThemeSpecError
 from apps.api.api.dependencies import (
+    enforce_ai_admission,
+    get_admin_identity,
     get_aigc_repository,
     get_budget_guard,
     get_garage_service,
@@ -32,6 +34,7 @@ from apps.api.api.dependencies import (
     get_theme_generation_service,
     get_usage_subject,
 )
+from apps.api.auth.service import AuthIdentity
 from apps.api.core.errors import AppError
 from apps.api.domain.vehicle.exceptions import (
     VehicleNotFoundError,
@@ -49,6 +52,7 @@ router = APIRouter()
 async def generate_theme(
     payload: GenerateThemeRequest,
     request: Request,
+    _admission: Annotated[None, Depends(enforce_ai_admission)],
     subject: Annotated[UsageSubject, Depends(get_usage_subject)],
     service: Annotated[ThemeGenerationService, Depends(get_theme_generation_service)],
     garage: Annotated[GarageService, Depends(get_garage_service)],
@@ -57,7 +61,7 @@ async def generate_theme(
     try:
         budget_state = await budget.current()
         vehicle_id = await garage.resolve_vehicle_id(
-            user_id=subject.user_id,
+            user_id=subject.vehicle_user_id,
             requested_vehicle_id=payload.vehicle_id,
             demo_vehicle_id=request.app.state.settings.default_vehicle_id,
         )
@@ -137,6 +141,7 @@ async def apply_theme(
 
 @router.get("/metrics")
 async def get_aigc_metrics(
+    _admin: Annotated[AuthIdentity, Depends(get_admin_identity)],
     repository: Annotated[AigcRepository, Depends(get_aigc_repository)],
 ) -> dict[str, float | int]:
     return await repository.metrics()
