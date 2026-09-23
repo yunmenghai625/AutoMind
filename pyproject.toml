@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "automind-api"
-version = "1.0.2"
+version = "1.0.3"
 description = "Production-oriented backend foundation for the AutoMind automotive AI platform"
 authors = [{ name = "yunmenghai625" }]
 readme = "README.md"

@@ -10,7 +10,7 @@ def test_versioned_health_reports_dependencies(client: TestClient) -> None:
     assert response.status_code == 200
     payload = response.json()
     assert payload["status"] == "ok"
-    assert payload["version"] == "1.0.2"
+    assert payload["version"] == "1.0.3"
     assert payload["environment"] == "test"
     assert payload["dependencies"]["database"]["status"] == "disabled"
     assert payload["dependencies"]["redis"]["status"] == "disabled"

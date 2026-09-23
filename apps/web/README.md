@@ -1,4 +1,4 @@
-# AutoMind Web 1.0.0
+# AutoMind Web 1.0.3
 
 Next.js 15 + React 19 驾驶舱，覆盖首页、Cockpit、Garage、Knowledge、Diagnosis、Admin、
 Architecture 与 Status。开发时可显式使用 Mock；staging/production 必须使用 live FastAPI。

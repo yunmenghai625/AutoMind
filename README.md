@@ -1,4 +1,4 @@
-# AutoMind 1.0.2
+# AutoMind 1.0.3
 
 AutoMind 是面向公网运行的汽车 AI Agent 产品：Next.js 驾驶舱连接 FastAPI、PostgreSQL/
 pgvector 与 Redis，提供车辆数字孪生、自然语言座舱控制、带引用的汽车知识 RAG、AI 主题、
@@ -128,7 +128,7 @@ Secret 标记的合成测试流量，不是实际用户量，也不是公网容�
 - `scripts/backup_postgres.sh` 与 `scripts/verify_backup.sh`：可验证逻辑备份。
 
 `main` 面向 staging，实际 `v*` 标签面向 production。只有 staging 云端回归完成后，才从真实
-发布提交创建 `v1.0.0`；不要在无 Git 历史的副本中制造标签。
+发布提交创建新的语义化版本标签（本次为 `v1.0.3`）；不要移动或复用已有发布标签。
 
 ## Monitoring 与安全
 
