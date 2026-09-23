@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from uuid import uuid4
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,7 @@ from apps.api.core.errors import install_exception_handlers
 from apps.api.core.logging import configure_logging
 from apps.api.core.middleware import RequestContextMiddleware
 from apps.api.core.rate_limit import RedisRateLimiter
-from apps.api.core.telemetry import configure_telemetry
+from apps.api.core.telemetry import configure_telemetry, shutdown_telemetry
 from apps.api.infrastructure.database import close_database
 
 
@@ -24,20 +25,26 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     redis_url = (
         resolved_settings.redis_url.get_secret_value() if resolved_settings.redis_url else ""
     )
+    redis_scope = (
+        f"test-{uuid4().hex}" if resolved_settings.app_env == "test" else resolved_settings.app_env
+    )
     rate_limiter = RedisRateLimiter(
         url=redis_url,
         limit=resolved_settings.rate_limit_per_minute,
         timeout_seconds=resolved_settings.redis_timeout_seconds,
+        namespace=f"{redis_scope}:http",
     )
     admin_login_limiter = RedisRateLimiter(
         url=redis_url,
         limit=resolved_settings.admin_login_rate_limit_per_minute,
         timeout_seconds=resolved_settings.redis_timeout_seconds,
+        namespace=f"{redis_scope}:admin-login",
     )
     ai_rate_limiter = RedisRateLimiter(
         url=redis_url,
         limit=resolved_settings.ai_rate_limit_per_minute,
         timeout_seconds=resolved_settings.redis_timeout_seconds,
+        namespace=f"{redis_scope}:ai",
     )
     ai_admission = AiAdmissionController(
         url=redis_url,
@@ -45,6 +52,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lease_seconds=resolved_settings.ai_lease_seconds,
         timeout_seconds=resolved_settings.redis_timeout_seconds,
         fail_closed=resolved_settings.app_env in {"staging", "production"},
+        namespace=redis_scope,
     )
 
     @asynccontextmanager
@@ -55,6 +63,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         await ai_rate_limiter.close()
         await ai_admission.close()
         await close_database()
+        shutdown_telemetry()
 
     application = FastAPI(
         title=resolved_settings.app_name,

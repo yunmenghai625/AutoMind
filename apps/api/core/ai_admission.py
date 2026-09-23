@@ -30,7 +30,6 @@ redis.call('ZADD', KEYS[1], expires, token)
 redis.call('PEXPIRE', KEYS[1], math.max(1000, expires - now))
 return 1
 """
-    _CONTROL_KEY = "automind:ai:enabled"
 
     def __init__(
         self,
@@ -40,10 +39,13 @@ return 1
         lease_seconds: int,
         timeout_seconds: float,
         fail_closed: bool = False,
+        namespace: str = "default",
     ) -> None:
         self._limit = limit
         self._lease_ms = lease_seconds * 1000
         self._fail_closed = fail_closed
+        self._control_key = f"automind:ai:{namespace}:enabled"
+        self._concurrency_key = f"automind:ai:{namespace}:concurrency"
         self._redis = (
             Redis.from_url(
                 url,
@@ -62,7 +64,7 @@ return 1
     async def is_enabled(self) -> bool:
         if self._redis is not None:
             try:
-                value = await self._redis.get(self._CONTROL_KEY)
+                value = await self._redis.get(self._control_key)
                 self.backend = "redis"
                 if value is not None:
                     self._local_enabled = value == "1"
@@ -76,7 +78,7 @@ return 1
         self._local_enabled = enabled
         if self._redis is not None:
             try:
-                await self._redis.set(self._CONTROL_KEY, "1" if enabled else "0")
+                await self._redis.set(self._control_key, "1" if enabled else "0")
                 self.backend = "redis"
             except Exception:
                 self.backend = "memory-fallback"
@@ -92,7 +94,7 @@ return 1
                 allowed = await self._redis.eval(
                     self._ACQUIRE_SCRIPT,
                     1,
-                    "automind:ai:concurrency",
+                    self._concurrency_key,
                     now_ms,
                     now_ms + self._lease_ms,
                     self._limit,
@@ -118,7 +120,7 @@ return 1
     async def release(self, lease: AiLease) -> None:
         if lease.backend == "redis" and self._redis is not None:
             try:
-                await self._redis.zrem("automind:ai:concurrency", lease.token)
+                await self._redis.zrem(self._concurrency_key, lease.token)
                 return
             except Exception:
                 pass
@@ -128,3 +130,15 @@ return 1
     async def close(self) -> None:
         if self._redis is not None:
             await self._redis.aclose()
+
+    async def health(self) -> bool:
+        if self._redis is None:
+            return False
+        try:
+            return bool(await self._redis.ping())
+        except Exception:
+            return False
+
+    @property
+    def configured(self) -> bool:
+        return self._redis is not None

@@ -19,7 +19,7 @@ Browser
             -> PostgreSQL + pgvector (business truth, audit, metrics)
             -> Redis (rate limit and graceful fallback)
             -> optional LLM/VLM/embedding/R2 providers
-            -> OTLP gateway (traces and metrics)
+            -> OTLP gateway (traces, metrics and sanitized logs)
 ```
 
 ## 发布链路

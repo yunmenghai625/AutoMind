@@ -132,14 +132,17 @@ Secret 标记的合成测试流量，不是实际用户量，也不是公网容�
 
 ## Monitoring 与安全
 
-配置 `OTEL_ENABLED=true`、OTLP endpoint 和 Secret header 后，可导出 traces/metrics 到兼容
-平台。Admin API 提供 overview、时序指标、components、budget、safety events 和 request_id
-定位。production 必须使用明确 HTTPS `CORS_ORIGINS`、独立高熵 Secrets、私网数据库/Redis、
-私有对象存储与最小权限管理账号。
+配置 `OTEL_ENABLED=true`、OTLP endpoint 和 Secret header 后，可导出脱敏后的 traces、metrics
+和 logs 到兼容平台。浏览器仅上报 Web Vitals、错误类型和页面路径，不上报用户输入或车辆数据；
+GitHub Actions 每 15 分钟从外部检查 API、数据库、Redis、知识库和前端。Admin API 提供 overview、
+时序指标、components、budget、safety events 和 request_id 定位。production 必须使用明确 HTTPS
+`CORS_ORIGINS`、独立高熵 Secrets、私网数据库/Redis、私有对象存储与最小权限管理账号。完整信号、
+告警阈值和验收步骤见 `docs/observability.md`。
 
 Rate Limit、Safety、Quota、Budget Guard 与 request timeout 不得为上线或压测关闭。AI 请求还受
 `AI_ENABLED` 总开关、`AI_RATE_LIMIT_PER_MINUTE` 单调用方限流和 `AI_MAX_CONCURRENCY` 跨实例
-并发闸门保护；production 必须保持 Redis 可用，Redis 故障时只保留单实例内存保护。
+并发闸门保护；production 必须保持 Redis 可用。普通 HTTP 限流在 Redis 故障时降级为单实例内存
+保护，但跨实例 AI 开关和并发闸门会拒绝请求，避免失控放量。
 合法压测
 必须同时提供 `X-AutoMind-Traffic-Class: load_test` 和正确 `X-Load-Test-Token`；错误令牌仍按
 用户流量处理。告警、故障处置和恢复步骤见 `docs/phase-7-runbook.md`。

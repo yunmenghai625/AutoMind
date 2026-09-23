@@ -44,7 +44,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         with span(
             f"{request.method} {request.url.path}",
             {"http.request.method": request.method, "url.path": request.url.path},
-        ):
+        ) as request_span:
             trace_id = current_trace_id() or uuid4().hex
             trace_token = trace_id_context.set(trace_id)
             request.state.trace_id = trace_id
@@ -68,6 +68,10 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
                 duration_ms = round((time.perf_counter() - started) * 1000, 2)
                 status_code = response.status_code if response is not None else 500
                 error_code = getattr(request.state, "error_code", None)
+                route = request.scope.get("route")
+                route_path = getattr(route, "path", request.url.path)
+                request_span.update_name(f"{request.method} {route_path}")
+                request_span.set_attribute("http.route", route_path)
                 logger.info(
                     "HTTP request completed",
                     extra={
@@ -83,9 +87,15 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
                 )
                 record_operation(
                     "http",
-                    status="success" if status_code < 400 else "error",
+                    status=(
+                        "success"
+                        if status_code < 400
+                        else "client_error"
+                        if status_code < 500
+                        else "server_error"
+                    ),
                     latency_ms=duration_ms,
-                    name=f"{request.method} {request.url.path}",
+                    name=f"{request.method} {route_path}",
                 )
                 await self._persist(request, status_code, duration_ms, error_code)
                 trace_id_context.reset(trace_token)
@@ -150,17 +160,18 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         if not settings.operational_metrics_persistence_enabled:
             return
         try:
-            async with get_session_factory(settings)() as session:
-                await OperationalRepository(session).record_http(
-                    request_id=request.state.request_id,
-                    trace_id=request.state.trace_id,
-                    method=request.method,
-                    path=request.url.path,
-                    status_code=status_code,
-                    duration_ms=duration_ms,
-                    error_code=error_code,
-                    traffic_class=request.state.traffic_class,
-                )
+            async with asyncio.timeout(settings.operational_metrics_timeout_seconds):
+                async with get_session_factory(settings)() as session:
+                    await OperationalRepository(session).record_http(
+                        request_id=request.state.request_id,
+                        trace_id=request.state.trace_id,
+                        method=request.method,
+                        path=request.url.path,
+                        status_code=status_code,
+                        duration_ms=duration_ms,
+                        error_code=error_code,
+                        traffic_class=request.state.traffic_class,
+                    )
         except Exception as exc:
             logger.warning(
                 "Operational HTTP metric persistence failed",

@@ -11,6 +11,7 @@ from apps.api.api.routes import (
     health,
     knowledge,
     preferences,
+    telemetry,
     vehicle,
     vehicle_data,
 )
@@ -28,3 +29,4 @@ api_router.include_router(preferences.router, prefix="/preferences", tags=["memo
 api_router.include_router(garage.router, prefix="/garage", tags=["garage"])
 api_router.include_router(vehicle_data.router, prefix="/vehicle", tags=["vehicle-data"])
 api_router.include_router(feedback.router, prefix="/feedback", tags=["feedback"])
+api_router.include_router(telemetry.router, prefix="/telemetry", tags=["telemetry"])

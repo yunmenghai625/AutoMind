@@ -48,7 +48,8 @@ alembic current
 
 ## Redis 故障
 
-应用会使用进程内限流降级，但多实例间无法共享计数。
+普通 HTTP 限流会降级为进程内计数，但多实例间无法共享；AI 运行时开关与跨实例并发闸门在
+staging/production 会失败关闭，拒绝新的 AI 请求，避免 Redis 故障时失控放量。
 
 1. 检查 Redis service、私网连接、认证和延迟。
 2. 不得因 Redis 故障关闭 Rate Limit；必要时临时降低入口流量。

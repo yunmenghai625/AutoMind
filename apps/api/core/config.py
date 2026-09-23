@@ -131,6 +131,7 @@ class Settings(BaseSettings):
     otel_export_interval_ms: int = Field(default=60000, ge=1000, le=300000)
     budget_economy_threshold_ratio: float = Field(default=0.8, ge=0.1, le=1)
     operational_metrics_persistence_enabled: bool = True
+    operational_metrics_timeout_seconds: float = Field(default=1.0, gt=0, le=5)
     load_test_token: SecretStr | None = None
 
     @field_validator("api_v1_prefix")

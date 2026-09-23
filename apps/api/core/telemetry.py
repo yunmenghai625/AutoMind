@@ -1,9 +1,13 @@
-from contextlib import AbstractContextManager
+import logging
+from contextlib import AbstractContextManager, suppress
 from typing import Any
 
 from opentelemetry import metrics, trace
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import SERVICE_NAME, SERVICE_VERSION, Resource
@@ -11,6 +15,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from apps.api.core.config import Settings
+from apps.api.core.logging import JsonFormatter
 from apps.api.core.request_context import traffic_class_context
 
 _configured = False
@@ -18,10 +23,41 @@ _operation_count = None
 _operation_latency = None
 _token_count = None
 _cost_count = None
+_trace_provider = None
+_meter_provider = None
+_logger_provider = None
+
+
+class _SanitizedOtelHandler(logging.Handler):
+    """Forward the already-redacted JSON representation to OTLP logs."""
+
+    def __init__(self, target: LoggingHandler) -> None:
+        super().__init__()
+        self._target = target
+        self._formatter = JsonFormatter()
+
+    def emit(self, record: logging.LogRecord) -> None:
+        if record.name.startswith("opentelemetry"):
+            return
+        try:
+            safe_record = logging.LogRecord(
+                name=record.name,
+                level=record.levelno,
+                pathname="",
+                lineno=0,
+                msg=self._formatter.format(record),
+                args=(),
+                exc_info=None,
+            )
+            safe_record.created = record.created
+            self._target.emit(safe_record)
+        except Exception:
+            self.handleError(record)
 
 
 def configure_telemetry(settings: Settings) -> None:
     global _configured, _operation_count, _operation_latency, _token_count, _cost_count
+    global _trace_provider, _meter_provider, _logger_provider
     if _configured or not settings.otel_enabled:
         return
     resource = Resource.create(
@@ -41,14 +77,35 @@ def configure_telemetry(settings: Settings) -> None:
                 export_interval_millis=settings.otel_export_interval_ms,
             )
         )
+        logger_provider = LoggerProvider(resource=resource)
+        logger_provider.add_log_record_processor(
+            BatchLogRecordProcessor(
+                OTLPLogExporter(endpoint=f"{endpoint}/v1/logs", headers=headers)
+            )
+        )
+        logging.getLogger().addHandler(
+            _SanitizedOtelHandler(LoggingHandler(logger_provider=logger_provider))
+        )
+        _logger_provider = logger_provider
     trace.set_tracer_provider(trace_provider)
-    metrics.set_meter_provider(MeterProvider(resource=resource, metric_readers=metric_readers))
+    meter_provider = MeterProvider(resource=resource, metric_readers=metric_readers)
+    metrics.set_meter_provider(meter_provider)
     meter = metrics.get_meter(settings.otel_service_name, settings.app_version)
     _operation_count = meter.create_counter("automind.operation.count")
     _operation_latency = meter.create_histogram("automind.operation.duration", unit="ms")
     _token_count = meter.create_counter("automind.llm.tokens")
     _cost_count = meter.create_counter("automind.ai.cost", unit="CNY")
+    _trace_provider = trace_provider
+    _meter_provider = meter_provider
     _configured = True
+
+
+def shutdown_telemetry() -> None:
+    """Flush telemetry during graceful process shutdown."""
+    for provider in (_logger_provider, _meter_provider, _trace_provider):
+        if provider is not None:
+            with suppress(Exception):
+                provider.shutdown()
 
 
 def span(name: str, attributes: dict[str, Any] | None = None) -> AbstractContextManager[Any]:

@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { Toaster } from "@/components/ui/sonner";
+import { ClientObservability } from "@/components/telemetry/client-observability";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -66,6 +67,7 @@ export default function RootLayout({
             <SiteFooter />
           </div>
           <Toaster />
+          <ClientObservability />
         </ThemeProvider>
       </body>
     </html>

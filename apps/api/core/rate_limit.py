@@ -22,8 +22,16 @@ local ttl = redis.call('TTL', KEYS[1])
 return {current, ttl}
 """
 
-    def __init__(self, *, url: str, limit: int, timeout_seconds: float) -> None:
+    def __init__(
+        self,
+        *,
+        url: str,
+        limit: int,
+        timeout_seconds: float,
+        namespace: str = "default",
+    ) -> None:
         self._limit = limit
+        self._namespace = namespace
         self._redis = (
             Redis.from_url(
                 url,
@@ -41,7 +49,12 @@ return {current, ttl}
     async def allow(self, key: str) -> RateLimitDecision:
         if self._redis is not None:
             try:
-                result = await self._redis.eval(self._SCRIPT, 1, f"automind:rate:{key}", 60)
+                result = await self._redis.eval(
+                    self._SCRIPT,
+                    1,
+                    f"automind:rate:{self._namespace}:{key}",
+                    60,
+                )
                 count, ttl = int(result[0]), max(1, int(result[1]))
                 self.backend = "redis"
                 return self._decision(count, ttl)
@@ -56,6 +69,10 @@ return {current, ttl}
             return bool(await self._redis.ping())
         except Exception:
             return False
+
+    @property
+    def configured(self) -> bool:
+        return self._redis is not None
 
     async def close(self) -> None:
         if self._redis is not None:

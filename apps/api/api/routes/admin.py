@@ -80,12 +80,28 @@ async def get_budget(
 
 @router.get("/components")
 async def get_components(request: Request) -> list[dict[str, Any]]:
+    settings = request.app.state.settings
     started = perf_counter()
-    database = await check_database(request.app.state.settings)
+    database = await check_database(settings)
     database_latency = round((perf_counter() - started) * 1000, 2)
     redis_started = perf_counter()
     redis_ok = await request.app.state.rate_limiter.health()
     redis_latency = round((perf_counter() - redis_started) * 1000, 2)
+    ai_enabled = settings.ai_enabled and await request.app.state.ai_admission.is_enabled()
+    llm_configured = bool(settings.llm_api_key and settings.llm_base_url and settings.llm_model)
+    aigc_s3_required = settings.aigc_asset_storage == "s3"
+    diagnosis_s3_required = settings.diagnosis_asset_storage == "s3"
+    s3_required = aigc_s3_required or diagnosis_s3_required
+    required_buckets_configured = (
+        not aigc_s3_required or bool(settings.aigc_r2_bucket or settings.r2_bucket)
+    ) and (not diagnosis_s3_required or bool(settings.diagnosis_r2_bucket or settings.r2_bucket))
+    storage_configured = bool(
+        settings.r2_endpoint
+        and required_buckets_configured
+        and settings.r2_access_key
+        and settings.r2_secret_key
+    )
+    telemetry_configured = bool(settings.otel_enabled and settings.otel_exporter_otlp_endpoint)
     return [
         {
             "name": "API",
@@ -107,11 +123,38 @@ async def get_components(request: Request) -> list[dict[str, Any]]:
         },
         {
             "name": "Telemetry",
-            "status": "operational" if request.app.state.settings.otel_enabled else "degraded",
+            "status": "operational" if telemetry_configured else "degraded",
             "latencyMs": 0,
-            "detail": "OTLP enabled"
-            if request.app.state.settings.otel_enabled
-            else "OTLP disabled",
+            "detail": "OTLP traces, metrics and logs configured"
+            if telemetry_configured
+            else "OTLP exporter is incomplete or disabled",
+        },
+        {
+            "name": "AI Admission",
+            "status": "operational" if ai_enabled else "degraded",
+            "latencyMs": 0,
+            "detail": f"{request.app.state.ai_admission.backend}; "
+            f"max concurrency {settings.ai_max_concurrency}",
+        },
+        {
+            "name": "LLM Gateway",
+            "status": "operational" if llm_configured else "degraded",
+            "latencyMs": 0,
+            "detail": "External model configured"
+            if llm_configured
+            else "Deterministic fallback only",
+        },
+        {
+            "name": "Asset Storage",
+            "status": "operational" if (not s3_required or storage_configured) else "degraded",
+            "latencyMs": 0,
+            "detail": (
+                "S3-compatible storage configured"
+                if s3_required and storage_configured
+                else "Local ephemeral storage"
+                if not s3_required
+                else "S3 configuration incomplete"
+            ),
         },
     ]
 
